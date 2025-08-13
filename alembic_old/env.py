@@ -1,21 +1,11 @@
-# --- 맨 위 경로 보강(권장)
-import os, sys
-from pathlib import Path
-BASE_DIR = Path(__file__).resolve().parents[1]
-sys.path.extend([str(BASE_DIR), str(BASE_DIR / "app")])
-
 from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 from alembic import context
-
-# --- 앱 설정/메타데이터
 from app.core.config import settings
 from app.core.database import Base
-import app.models  # ★ 모든 모델 등록
+from app.models import *  # 모든 모델 import
 
 config = context.config
-
-# .env의 URL을 Alembic에 주입
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
 if config.config_file_name is not None:
@@ -30,9 +20,8 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
-        compare_type=True,
-        compare_server_default=True,
     )
+
     with context.begin_transaction():
         context.run_migrations()
 
@@ -42,13 +31,10 @@ def run_migrations_online() -> None:
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
+
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection,
-            target_metadata=target_metadata,
-            compare_type=True,
-            compare_server_default=True,
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
+
         with context.begin_transaction():
             context.run_migrations()
 

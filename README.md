@@ -231,7 +231,7 @@ pip list
 
 ```bash
 # 환경변수 파일 복사
-cp .env.example .env
+cp .env .env
 
 # .env 파일을 편집기로 열어서 설정값 입력
 # Windows

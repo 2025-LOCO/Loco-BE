@@ -10,3 +10,10 @@ pydantic==2.5.0
 pydantic-settings==2.1.0
 httpx==0.25.2
 python-dotenv==1.0.0
+
+email-validator
+python-multipart
+python-jose[cryptography]
+passlib[bcrypt]
+pydantic-settings
+httpx
