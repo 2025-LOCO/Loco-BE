@@ -1,4 +1,19 @@
 # alembic/env.py
+# --- BEGIN: .env 파일을 강제로 읽어오기 위해 추가한 코드 ---
+from dotenv import load_dotenv
+import os
+
+# 현재 파일(env.py)의 위치를 기준으로 상위 폴더(프로젝트 루트)를 찾습니다.
+project_root = os.path.join(os.path.dirname(__file__), '..')
+# 프로젝트 루트에 있는 .env 파일의 전체 경로를 만듭니다.
+dotenv_path = os.path.join(project_root, '.env')
+
+# .env 파일이 해당 경로에 존재하는지 확인하고, 있다면 강제로 로드합니다.
+if os.path.exists(dotenv_path):
+    print(f"INFO: Loading .env file from: {dotenv_path}")
+    load_dotenv(dotenv_path=dotenv_path)
+else:
+    print(f"WARN: .env file not found at: {dotenv_path}")
 import os
 from logging.config import fileConfig
 
