@@ -1,0 +1,18 @@
+# Web & ASGI
+fastapi>=0.110.0,<1.0.0
+uvicorn[standard]>=0.29.0
+
+# Data Validation
+pydantic>=2.6.0
+
+# ORM & DB
+SQLAlchemy>=2.0.25
+psycopg2-binary>=2.9.9
+alembic>=1.13.1
+
+# Auth
+passlib[bcrypt]>=1.7.4
+PyJWT>=2.9.0
+
+# Config
+python-dotenv>=1.0.1
