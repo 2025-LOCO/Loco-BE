@@ -10,6 +10,8 @@ class PlaceCreate(BaseModel):
     pros: Optional[str] = Field(None, max_length=100)
     cons: Optional[str] = Field(None, max_length=100)
     image_url: Optional[str] = None
+    latitude: float
+    longitude: float
 
 class PlaceOut(BaseModel):
     place_id: int
@@ -23,6 +25,8 @@ class PlaceOut(BaseModel):
     count_real: int
     count_normal: int
     count_bad: int
+    latitude: float
+    longitude: float
 
     class Config:
         from_attributes = True

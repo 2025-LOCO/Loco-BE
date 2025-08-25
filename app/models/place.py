@@ -1,7 +1,7 @@
 from typing import Optional
 from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Integer, String, Text, DateTime, Boolean, ForeignKey
+from sqlalchemy import Integer, String, Text, DateTime, Boolean, ForeignKey, Float
 from sqlalchemy.sql import func
 from app.core.database import Base
 
@@ -30,8 +30,8 @@ class Place(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     # 위치 관련 추가 칼럼(필요 시 활성화)
-    # lat: Mapped[Optional[float]] = mapped_column(nullable=True)
-    # lng: Mapped[Optional[float]] = mapped_column(nullable=True)
+    latitude: Mapped[float] = mapped_column(Float, nullable=False)
+    longitude: Mapped[float] = mapped_column(Float, nullable=False)
 
     creator = relationship("User", back_populates="created_places")
     favorites = relationship("FavoritePlace", back_populates="place", cascade="all, delete-orphan")
