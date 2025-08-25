@@ -16,3 +16,6 @@ PyJWT>=2.9.0
 
 # Config
 python-dotenv>=1.0.1
+
+# External API Calls
+requests>=2.31.0

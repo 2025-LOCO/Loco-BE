@@ -21,6 +21,10 @@ class Settings(BaseSettings):
     SGIS_CONSUMER_KEY: str = ""
     SGIS_CONSUMER_SECRET: str = ""
 
+    # 외부 API 키
+    TOUR_API_KEY: str = ""
+    KAKAO_REST_API_KEY: str = ""
+
     # CORS
     ALLOWED_ORIGINS: list[str] = Field(default_factory=lambda: ["http://localhost:5173", "http://localhost:3000"], env="ALLOWED_ORIGINS")
 
