@@ -1,10 +1,13 @@
 # app/models/user.py
 from typing import Optional
 from datetime import datetime
+from xmlrpc.client import Boolean
+
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Integer, String, DateTime, ForeignKey
 from sqlalchemy.sql import func
 from app.core.database import Base
+from sqlalchemy import Boolean
 
 class User(Base):
     __tablename__ = "users"
@@ -35,3 +38,7 @@ class User(Base):
 
     questions = relationship("Question", back_populates="author", cascade="all, delete-orphan")
     answers = relationship("Answer", back_populates="author", cascade="all, delete-orphan")
+
+    # 현지인 여부 추가
+    city_id: Mapped[Optional[str]] = mapped_column(ForeignKey("region_cities.region_id"), nullable=True)
+    is_local: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)

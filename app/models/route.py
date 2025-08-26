@@ -4,6 +4,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Integer, String, Text, DateTime, Boolean, ForeignKey
 from sqlalchemy.sql import func
 from app.core.database import Base
+from pgvector.sqlalchemy import Vector
+
 
 class Route(Base):
     __tablename__ = "routes"
@@ -33,3 +35,6 @@ class Route(Base):
     favorites = relationship("FavoriteRoute", back_populates="route", cascade="all, delete-orphan")
     votes = relationship("RouteVote", back_populates="route", cascade="all, delete-orphan")
     places = relationship("RoutePlaceMap", back_populates="route", cascade="all, delete-orphan")
+
+    # 해시태그 벡터를 저장할 컬럼
+    embedding: Mapped[Vector] = mapped_column(Vector(768), nullable=True)

@@ -9,10 +9,15 @@ pydantic>=2.6.0
 SQLAlchemy>=2.0.25
 psycopg2-binary>=2.9.9
 alembic>=1.13.1
+pgvector>=0.2.0
 
-# Auth
+# Auth & Security
 passlib[bcrypt]>=1.7.4
+bcrypt>=4.0.1
 PyJWT>=2.9.0
+
+# AI & Vector Embedding
+sentence-transformers>=2.2.2
 
 # Config
 python-dotenv>=1.0.1

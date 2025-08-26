@@ -1,3 +1,4 @@
+from dataclasses import Field
 from enum import Enum
 
 class VoteType(str, Enum):
