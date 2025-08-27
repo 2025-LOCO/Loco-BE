@@ -21,13 +21,13 @@ def submit_survey(
 
 @router.post("/routes", response_model=List[RouteRecommendation])
 def get_recommended_routes(
-    payload: SurveyAnswer,  # 설문과 동일 포맷으로 바로 추천만 받고 싶을 때
+    payload: SurveyAnswer,
     db: Session = Depends(get_db)
 ):
     results = recommend_routes(db, payload, limit=10)
     return [
         RouteRecommendation(
-            route_id=r["route"].route_id,
+            route_id=r["route"].route_id, # 이 부분은 이제 정상 동작합니다.
             name=r["route"].name,
             score=r["score"],
             matched=r["matched"],
