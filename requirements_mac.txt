@@ -1,0 +1,33 @@
+# Web & ASGI
+fastapi>=0.114.2,<1.0.0
+uvicorn[standard]>=0.30.6,<0.31
+
+# Data Validation
+pydantic>=2.8.2,<3.0.0
+pydantic-settings>=2.3.4,<3.0.0
+# pydantic[email] extra가 email-validator를 가져오지만, 명시적으로도 명기
+email-validator>=2.2.0,<3.0.0
+
+# ORM & DB
+SQLAlchemy>=2.0.36,<3.0.0
+psycopg2-binary>=2.9.9,<3.0.0
+alembic>=1.13.2,<2.0.0
+pgvector>=0.2.5,<0.3
+
+# Auth & Security
+passlib[bcrypt]>=1.7.4,<2.0.0
+bcrypt>=4.2.0,<5.0.0
+PyJWT>=2.9.0,<3.0.0
+python-jose[cryptography]>=3.3.0,<4.0.0
+
+# AI & Vector Embedding
+sentence-transformers>=2.7.0,<3.0.0
+
+# Config
+python-dotenv>=1.0.1,<2.0.0
+
+# External API Calls
+requests>=2.32.3,<3.0.0
+
+# Multipart form-data
+python-multipart>=0.0.9,<0.1
