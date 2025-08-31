@@ -8,7 +8,7 @@ from app.crud import place as crud_place
 from app.models import User
 from app.utils.security import get_current_user
 
-router = APIRouter(prefix="/api/v1/places", tags=["places"])
+router = APIRouter(prefix="/places", tags=["places"])
 
 @router.post("", response_model=PlaceOut)
 def create_place(body: PlaceBase, db: Session = Depends(get_db), current: User = Depends(get_current_user)):

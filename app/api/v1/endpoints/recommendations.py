@@ -8,7 +8,7 @@ from app.services.recommend import recommend_routes
 from app.models import User
 from app.utils.security import get_current_user  # 로그인 사용자 기반 저장이 필요할 때
 
-router = APIRouter(prefix="/api/v1/recommendations", tags=["recommendations"])
+router = APIRouter(prefix="/recommendations", tags=["recommendations"])
 
 @router.post("/survey", response_model=SurveySaved)
 def submit_survey(

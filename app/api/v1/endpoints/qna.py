@@ -8,7 +8,7 @@ from app.crud import qna as crud_qna
 from app.models import User
 from app.utils.security import get_current_user
 
-router = APIRouter(prefix="/api/v1/qna", tags=["qna"])
+router = APIRouter(prefix="/qna", tags=["qna"])
 
 @router.post("/questions", response_model=QuestionOut)
 def create_question(body: QuestionCreate, db: Session = Depends(get_db), current: User = Depends(get_current_user)):

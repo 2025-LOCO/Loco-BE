@@ -7,7 +7,7 @@ from app.crud import favorite as crud_fav
 from app.models import User
 from app.utils.security import get_current_user
 
-router = APIRouter(prefix="/api/v1/favorites", tags=["favorites"])
+router = APIRouter(prefix="/favorites", tags=["favorites"])
 
 @router.post("/places")
 def add_fav_place(body: FavoritePlaceCreate, db: Session = Depends(get_db), current: User = Depends(get_current_user)):

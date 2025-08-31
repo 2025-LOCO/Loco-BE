@@ -7,7 +7,7 @@ from app.models import User
 from app.crud.user import crud_user
 from app.utils.security import get_current_user  # 토큰에서 사용자 로드(예시 아래)
 
-router = APIRouter(prefix="/api/v1/users", tags=["users"])
+router = APIRouter(prefix="/users", tags=["users"])
 
 @router.get("/me", response_model=UserOut)
 def me(current: User = Depends(get_current_user)):

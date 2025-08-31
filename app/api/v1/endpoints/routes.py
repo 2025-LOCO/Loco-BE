@@ -8,7 +8,7 @@ from app.crud import route as crud_route
 from app.models import User
 from app.utils.security import get_current_user
 
-router = APIRouter(prefix="/api/v1/routes", tags=["routes"])
+router = APIRouter(prefix="/routes", tags=["routes"])
 
 @router.post("", response_model=RouteOut)
 def create_route(body: RouteCreate, db: Session = Depends(get_db), current: User = Depends(get_current_user)):
