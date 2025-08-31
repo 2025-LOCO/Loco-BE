@@ -1,6 +1,6 @@
 # app/schemas/place.py
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 class PlaceCreate(BaseModel):
     name: str = Field(..., max_length=255)
@@ -30,3 +30,13 @@ class PlaceOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class PlaceBase(BaseModel):
+    name: Optional[str] = None
+    type: Optional[str] = None
+    is_frequent: Optional[bool] = None
+    atmosphere: Optional[str] = None
+    pros: Optional[str] = None
+    cons: Optional[str] = None
+    image_url: Optional[str] = None

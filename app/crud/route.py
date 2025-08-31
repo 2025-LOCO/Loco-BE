@@ -1,4 +1,5 @@
 # app/crud/route.py
+from typing import Optional
 from sqlalchemy.orm import Session
 from app.models import Route
 from app.schemas.route import RouteCreate
@@ -32,3 +33,6 @@ def create(db: Session, user_id: int, obj_in: RouteCreate) -> Route:
     db.commit()
     db.refresh(route)
     return route
+
+def get_by_id(db: Session, route_id: int) -> Optional[Route]:
+    return db.query(Route).filter(Route.id == route_id).first()

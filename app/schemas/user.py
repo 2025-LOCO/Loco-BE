@@ -27,3 +27,14 @@ class UserOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class UserPublic(BaseModel):
+    id: int
+    nickname: Optional[str] = None
+    city_id: Optional[str] = None
+    intro: Optional[str] = None
+    avatar_url: Optional[str] = None
+    created_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True

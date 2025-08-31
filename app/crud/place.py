@@ -1,6 +1,6 @@
 # app/crud/place.py
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from app.models import Place
 from app.schemas.place import PlaceCreate
 
@@ -13,6 +13,8 @@ def create(db: Session, user_id: int, obj_in: PlaceCreate) -> Place:
         pros=obj_in.pros,
         cons=obj_in.cons,
         image_url=obj_in.image_url,
+        latitude=obj_in.latitude,
+        longitude=obj_in.longitude,
         created_by=user_id,
     )
     db.add(place)
@@ -22,3 +24,6 @@ def create(db: Session, user_id: int, obj_in: PlaceCreate) -> Place:
 
 def list_all(db: Session, limit: int = 50, offset: int = 0) -> List[Place]:
     return db.query(Place).order_by(Place.place_id.desc()).offset(offset).limit(limit).all()
+
+def get_by_id(db: Session, place_id: int) -> Optional[Place]:
+    return db.query(Place).filter(Place.place_id == place_id).first()
