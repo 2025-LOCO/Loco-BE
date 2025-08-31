@@ -5,14 +5,14 @@ PostgreSQL + SQLAlchemy + Alembic, JWT 인증, bcrypt 해싱을 사용합니다.
 
 ## 요구 사항
 
-- Python 3.9
+- Python 3.11
 - PostgreSQL 13+ (로컬: `localhost:5432`)
 - OS X / Linux / WSL 권장
 
 ## 설치
 
 ```bash
-python3.9 -m venv .venv
+python3.11 -m venv .venv
 source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
