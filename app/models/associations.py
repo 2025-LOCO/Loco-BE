@@ -16,7 +16,7 @@ class FavoritePlace(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
     place_id: Mapped[int] = mapped_column(ForeignKey("places.place_id"), nullable=False, index=True)
 
-    saved_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     is_certificated: Mapped[bool] = mapped_column(Boolean, default=False)
     certificate_img_url: Mapped[Optional[str]] = mapped_column(String(1000), nullable=True)
 
@@ -35,7 +35,7 @@ class FavoriteRoute(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
     route_id: Mapped[int] = mapped_column(ForeignKey("routes.route_id"), nullable=False, index=True)
 
-    saved_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     user = relationship("User", back_populates="favorite_routes")
     route = relationship("Route", back_populates="favorites")
