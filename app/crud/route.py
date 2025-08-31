@@ -35,4 +35,13 @@ def create(db: Session, user_id: int, obj_in: RouteCreate) -> Route:
     return route
 
 def get_by_id(db: Session, route_id: int) -> Optional[Route]:
-    return db.query(Route).filter(Route.id == route_id).first()
+    return db.query(Route).filter(Route.route_id == route_id).first()
+
+def list_all(db: Session, limit: int = 50, offset: int = 0) -> list[Route]:
+    return (
+        db.query(Route)
+        .order_by(Route.route_id.desc())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
