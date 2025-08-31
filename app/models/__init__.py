@@ -8,6 +8,7 @@ from .route import Route
 from .associations import FavoritePlace, FavoriteRoute, RoutePlaceMap
 from .votes import PlaceVote, RouteVote
 from .qna import Question, Answer
+from .survey import SurveySession
 
 __all__ = [
     "VoteType",
@@ -23,4 +24,5 @@ __all__ = [
     "RouteVote",
     "Question",
     "Answer",
+    "SurveySession",
 ]

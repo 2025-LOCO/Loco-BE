@@ -24,8 +24,3 @@ def read_route_detail(route_id: int, db: Session = Depends(get_db)):
     if not obj:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Route not found")
     return obj
-
-# app/api/v1/endpoints/routes.py
-@router.get("", response_model=List[RouteOut])
-def list_routes(db: Session = Depends(get_db)):
-    return crud_route.list_all(db)
