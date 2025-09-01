@@ -48,6 +48,28 @@ alembic init alembic
 
 `alembic.ini`의 `sqlalchemy.url` 또는 `alembic/env.py`에서 `DATABASE_URL`을 참조하도록 설정하세요.
 
+### (중요) pgvector 사용 시 리비전 파일 작성 규칙
+
+리비전에 Vector 타입 컬럼이 포함되면, 해당 리비전 파일 상단과 upgrade() 초기에 아래를 반드시 추가하세요.
+
+```python
+# alembic/versions/xxxx_init_schema.py
+from alembic import op
+import sqlalchemy as sa
+from pgvector.sqlalchemy import Vector  # ★ 추가
+
+def upgrade():
+    # ★ DB 확장 설치 보장 (여러 번 실행되어도 안전)
+    op.execute("CREATE EXTENSION IF NOT EXISTS vector;")
+
+    # 예시: 벡터 컬럼 포함 테이블
+    op.create_table(
+        "place_embeddings",
+        sa.Column("id", sa.Integer(), primary_key=True),
+        sa.Column("embedding", Vector(768), nullable=True),  # ★ Vector 타입
+    )
+```
+
 ### 3) 마이그레이션 생성 및 적용
 ```bash
 alembic revision --autogenerate -m "sync schema with new models"
