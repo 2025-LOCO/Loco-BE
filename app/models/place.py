@@ -16,7 +16,7 @@ class Place(Base):
     name: Mapped[str] = mapped_column(String(255), index=True)
     type: Mapped[str] = mapped_column(String(50))  # enum 문자열로 보관
     is_frequent: Mapped[bool] = mapped_column(Boolean, default=False)  # 자주가는/직접추가 구분
-    created_by: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    created_by: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     kakao_place_id: Mapped[Optional[str]] = mapped_column(String(64), unique=True, nullable=True, index=True)
 

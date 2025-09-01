@@ -30,3 +30,17 @@ def read_user_public_profile(user_id: int, db: Session = Depends(get_db)):
 
     # 필요한 공개 필드만 매핑; 모델 필드명에 맞게 조정
     return UserPublic.model_validate(obj)
+
+@router.delete("/me", status_code=204, summary="회원 탈퇴")
+def delete_me(db: Session = Depends(get_db), current: User = Depends(get_current_user)):
+    # 추가 보안: DB에서 최신 상태를 재로딩 (선택)
+    user = db.get(User, current.id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # 발급된 토큰 즉시 무효화를 위해 버전 증가(선택적이지만 권장)
+    user.token_version += 1
+    db.delete(user)
+    db.commit()
+    # 204 No Content
+    return

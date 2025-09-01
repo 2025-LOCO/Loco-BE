@@ -13,7 +13,7 @@ class Route(Base):
     route_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(255), index=True)
     is_recommend: Mapped[bool] = mapped_column(Boolean, default=False)  # 추천/직접만든 구분
-    created_by: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    created_by: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     image_url: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 

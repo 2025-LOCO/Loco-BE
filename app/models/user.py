@@ -14,6 +14,9 @@ class User(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
 
+    # 토큰 버전 (로그아웃/세션 무효화를 위한 전역 카운터)
+    token_version: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+
     # 인증용
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -27,8 +30,8 @@ class User(Base):
 
     city = relationship("RegionCity", back_populates="users")
 
-    created_places = relationship("Place", back_populates="creator")
-    created_routes = relationship("Route", back_populates="creator")
+    created_places = relationship("Place", back_populates="creator", cascade="all, delete-orphan", passive_deletes=True)
+    created_routes = relationship("Route", back_populates="creator", passive_deletes=True)
 
     favorite_places = relationship("FavoritePlace", back_populates="user", cascade="all, delete-orphan")
     favorite_routes = relationship("FavoriteRoute", back_populates="user", cascade="all, delete-orphan")

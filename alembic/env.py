@@ -1,30 +1,51 @@
 # alembic/env.py
-import os
+from __future__ import annotations
+import os, sys
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config, pool
 from alembic import context
 
-# 이 프로젝트의 Base/메타데이터를 가져온다
-# 주의: 모든 모델이 app.models.__init__ 에서 import/export 되어 있어야 함
-from app.core.database import Base
-from app.models import *  # noqa: F401 - 메타데이터 로딩 목적
-from app.core.config import settings  # DATABASE_URL 제공하는 모듈
+# 1) 프로젝트 루트 경로 추가 (alembic/ 상위가 루트라고 가정)
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-# 이곳은 Alembic의 config 객체 (alembic.ini)
+# 2) 앱 메타데이터 로드
+from app.core.database import Base           # Base.metadata
+from app.core.config import settings         # DATABASE_URL 제공
+# models/__init__.py 안에서 모든 모델을 import/export 하고 있어야 자동 감지됩니다.
+from app import models  # noqa: F401
+
 config = context.config
 
-# .ini 로거 설정
-if config.config_file_name is not None:
+# 로깅
+if config.config_file_name:
     fileConfig(config.config_file_name)
 
-# Alembic이 참조할 메타데이터
 target_metadata = Base.metadata
 
-def get_url():
-    # DATABASE_URL을 환경 또는 settings에서 가져옵니다.
-    # 예: postgresql+psycopg2://user:pass@host:5432/dbname
-    return settings.DATABASE_URL
+def _normalize_url(url: str | None) -> str:
+    """
+    Alembic용 동기 URL을 반환합니다.
+    앱이 async URL을 사용할 경우 psycopg2로 변환합니다.
+    """
+    if not url:
+        # alembic.ini의 sqlalchemy.url 로 폴백
+        return config.get_main_option("sqlalchemy.url")
+
+    if url.startswith("postgresql+asyncpg://"):
+        return "postgresql+psycopg2://" + url.split("://", 1)[1]
+    return url
+
+def get_url() -> str:
+    # 우선순위: 환경변수 > settings.DATABASE_URL > alembic.ini
+    env_url = os.getenv("DATABASE_URL")
+    url = env_url or getattr(settings, "DATABASE_URL", None)
+    norm = _normalize_url(url)
+    if not norm:
+        raise RuntimeError(
+            "DATABASE_URL이 비어 있습니다. 환경변수 또는 alembic.ini(sqlalchemy.url)를 설정하세요."
+        )
+    return norm
 
 def run_migrations_offline():
     url = get_url()
@@ -32,10 +53,9 @@ def run_migrations_offline():
         url=url,
         target_metadata=target_metadata,
         literal_binds=True,
-        compare_type=True,     # 타입 변경 감지
-        compare_server_default=True,  # server_default 변경 감지
+        compare_type=True,
+        compare_server_default=True,
     )
-
     with context.begin_transaction():
         context.run_migrations()
 
@@ -49,7 +69,6 @@ def run_migrations_online():
         poolclass=pool.NullPool,
         future=True,
     )
-
     with connectable.connect() as connection:
         context.configure(
             connection=connection,
@@ -57,7 +76,6 @@ def run_migrations_online():
             compare_type=True,
             compare_server_default=True,
         )
-
         with context.begin_transaction():
             context.run_migrations()
 
