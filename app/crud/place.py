@@ -15,6 +15,7 @@ def create(db: Session, user_id: int, obj_in: PlaceCreate) -> Place:
         image_url=obj_in.image_url,
         latitude=obj_in.latitude,
         longitude=obj_in.longitude,
+        kakao_place_id=obj_in.kakao_place_id,
         created_by=user_id,
     )
     db.add(place)

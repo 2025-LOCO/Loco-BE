@@ -18,6 +18,8 @@ class Place(Base):
     is_frequent: Mapped[bool] = mapped_column(Boolean, default=False)  # 자주가는/직접추가 구분
     created_by: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
 
+    kakao_place_id: Mapped[Optional[str]] = mapped_column(String(64), unique=True, nullable=True, index=True)
+
     atmosphere: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     pros: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     cons: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)

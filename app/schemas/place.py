@@ -12,6 +12,7 @@ class PlaceCreate(BaseModel):
     image_url: Optional[str] = None
     latitude: float
     longitude: float
+    kakao_place_id: Optional[str] = Field(None, max_length=64)
 
 class PlaceOut(BaseModel):
     place_id: int
@@ -27,6 +28,7 @@ class PlaceOut(BaseModel):
     count_bad: int
     latitude: float
     longitude: float
+    kakao_place_id: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -40,3 +42,4 @@ class PlaceBase(BaseModel):
     pros: Optional[str] = None
     cons: Optional[str] = None
     image_url: Optional[str] = None
+    kakao_place_id: Optional[str] = None
