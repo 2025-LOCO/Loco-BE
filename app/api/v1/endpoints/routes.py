@@ -3,12 +3,22 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.core.database import get_db
-from app.schemas.route import RouteCreate, RouteOut
+from app.schemas.route import RouteCreate, RouteOut, RouteExploreOut
 from app.crud import route as crud_route
 from app.models import User
 from app.utils.security import get_current_user
 
 router = APIRouter(prefix="/routes", tags=["routes"])
+
+@router.get("/explore", response_model=RouteExploreOut, summary="루트 탐색 페이지 데이터 조회")
+def get_route_explore(db: Session = Depends(get_db)):
+    ranked_routes = crud_route.get_ranked_routes(db, limit=5)
+    new_routes = crud_route.get_new_routes(db, limit=5)
+
+    return RouteExploreOut(
+        ranked_routes=ranked_routes,
+        new_routes=new_routes
+    )
 
 @router.post("", response_model=RouteOut)
 def create_route(body: RouteCreate, db: Session = Depends(get_db), current: User = Depends(get_current_user)):

@@ -1,6 +1,7 @@
 # app/crud/route.py
 from typing import Optional, List
 from sqlalchemy.orm import Session
+from sqlalchemy import case
 from app.models import Route
 from app.schemas.route import RouteCreate
 from app.services.vector_service import text_to_vector
@@ -74,3 +75,14 @@ def search_by_tags(
         .limit(limit)
         .all()
     )
+
+def get_ranked_routes(db: Session, limit: int = 5) -> List[Route]:
+    ranking_score = case(
+        ( (Route.count_real + Route.count_bad) > 0, Route.count_real / (Route.count_real + Route.count_bad) ),
+        else_ = 0.0
+    ).label("ranking_score")
+
+    return db.query(Route).order_by(ranking_score.desc()).limit(limit).all()
+
+def get_new_routes(db: Session, limit: int = 5) -> List[Route]:
+    return db.query(Route).order_by(Route.created_at.desc()).limit(limit).all()

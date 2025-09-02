@@ -1,5 +1,5 @@
 # app/schemas/route.py
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, Field
 
 class RouteCreate(BaseModel):
@@ -30,3 +30,7 @@ class RouteOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class RouteExploreOut(BaseModel):
+    ranked_routes: List[RouteOut]
+    new_routes: List[RouteOut]
