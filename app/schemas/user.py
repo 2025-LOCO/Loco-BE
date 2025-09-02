@@ -2,6 +2,7 @@
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, EmailStr, Field
+from app.models.user import UserGrade
 
 class UserBase(BaseModel):
     email: EmailStr
@@ -24,6 +25,9 @@ class UserOut(BaseModel):
     intro: Optional[str]
     city_id: Optional[str]
     created_at: datetime
+    ranking: Optional[int]
+    points: int
+    grade: UserGrade
 
     class Config:
         from_attributes = True
@@ -35,6 +39,9 @@ class UserPublic(BaseModel):
     intro: Optional[str] = None
     avatar_url: Optional[str] = None
     created_at: Optional[datetime] = None
+    ranking: Optional[int]
+    points: int
+    grade: UserGrade
 
     class Config:
         from_attributes = True
