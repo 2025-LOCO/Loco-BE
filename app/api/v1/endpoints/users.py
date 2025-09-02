@@ -16,8 +16,8 @@ def me(current: User = Depends(get_current_user)):
 
 @router.get("/loco-explore", response_model=LocoExploreOut, summary="로코탐색 페이지 데이터 조회")
 def get_loco_explore_users(db: Session = Depends(get_db)):
-    best_users_db = crud_user.get_best_users(db, limit=5)
-    new_local_users_db = crud_user.get_new_local_users(db, limit=5)
+    best_users_db = crud_user.get_best_users(db, limit=25)
+    new_local_users_db = crud_user.get_new_local_users(db, limit=25)
 
     # 랭킹 백분율 계산을 위해 전체 랭킹 유저 수를 가져옵니다.
     total_ranked_users = crud_user.get_total_ranked_user_count(db)

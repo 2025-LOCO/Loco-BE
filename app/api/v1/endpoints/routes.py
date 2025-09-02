@@ -12,8 +12,8 @@ router = APIRouter(prefix="/routes", tags=["routes"])
 
 @router.get("/explore", response_model=RouteExploreOut, summary="루트 탐색 페이지 데이터 조회")
 def get_route_explore(db: Session = Depends(get_db)):
-    ranked_routes = crud_route.get_ranked_routes(db, limit=5)
-    new_routes = crud_route.get_new_routes(db, limit=5)
+    ranked_routes = crud_route.get_ranked_routes(db, limit=25)
+    new_routes = crud_route.get_new_routes(db, limit=25)
 
     return RouteExploreOut(
         ranked_routes=ranked_routes,

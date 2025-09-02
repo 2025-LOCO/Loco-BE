@@ -12,8 +12,8 @@ router = APIRouter(prefix="/places", tags=["places"])
 
 @router.get("/explore", response_model=PlaceExploreOut, summary="장소 탐색 페이지 데이터 조회")
 def get_place_explore(db: Session = Depends(get_db)):
-    ranked_places = crud_place.get_ranked_places(db, limit=5)
-    new_places = crud_place.get_new_places(db, limit=5)
+    ranked_places = crud_place.get_ranked_places(db, limit=25)
+    new_places = crud_place.get_new_places(db, limit=25)
 
     return PlaceExploreOut(
         ranked_places=ranked_places,

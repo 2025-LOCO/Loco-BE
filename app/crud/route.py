@@ -1,7 +1,7 @@
 # app/crud/route.py
 from typing import Optional, List
 from sqlalchemy.orm import Session
-from sqlalchemy import case
+from sqlalchemy import case, func, Float
 from app.models import Route
 from app.schemas.route import RouteCreate
 from app.services.vector_service import text_to_vector
@@ -76,10 +76,20 @@ def search_by_tags(
         .all()
     )
 
+
 def get_ranked_routes(db: Session, limit: int = 5) -> List[Route]:
+    # n = 전체 투표 수 (실수로 변환), p = 긍정 투표 비율
+    n = (Route.count_real + Route.count_bad).cast(Float)
+    p = (Route.count_real).cast(Float) / n
+
+    # 윌슨 스코어 계산 (z-score for 95% confidence = 1.96)
+    z = 1.96
+    wilson_score = (p + z * z / (2 * n) - z * func.sqrt((p * (1 - p) + z * z / (4 * n)) / n)) / (1 + z * z / n)
+
+    # 투표가 없을 경우(n=0) 0점으로 처리
     ranking_score = case(
-        ( (Route.count_real + Route.count_bad) > 0, Route.count_real / (Route.count_real + Route.count_bad) ),
-        else_ = 0.0
+        (n > 0, wilson_score),
+        else_=0.0
     ).label("ranking_score")
 
     return db.query(Route).order_by(ranking_score.desc()).limit(limit).all()
