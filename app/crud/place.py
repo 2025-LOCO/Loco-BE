@@ -31,22 +31,19 @@ def get_by_id(db: Session, place_id: int) -> Optional[Place]:
     return db.query(Place).filter(Place.place_id == place_id).first()
 
 
-def get_ranked_places(db: Session, limit: int = 5) -> List[Place]:
-    # n = 전체 투표 수, p = 긍정 투표 비율
+def get_ranked_places(db: Session, limit: int = 25) -> List[Place]:
     n = (Place.count_real + Place.count_bad).cast(Float)
-    p = (Place.count_real).cast(Float) / n
+    z = 1.96  # 95% 신뢰수준
 
-    # 윌슨 스코어 계산 (z-score for 95% confidence = 1.96)
-    z = 1.96
-    wilson_score = (p + z * z / (2 * n) - z * func.sqrt((p * (1 - p) + z * z / (4 * n)) / n)) / (1 + z * z / n)
-
-    # 투표가 없을 경우(n=0) 0점으로 처리
+    # 윌슨 스코어 계산식을 CASE 안으로 이동하여 0으로 나누기 오류를 원천 방지
     ranking_score = case(
-        (n > 0, wilson_score),
+        (n > 0, (
+            (Place.count_real.cast(Float) / n + (z*z) / (2*n) - z * func.sqrt(( (Place.count_real.cast(Float) / n) * (1 - (Place.count_real.cast(Float) / n)) + (z*z) / (4*n) ) / n)) / (1 + (z*z)/n)
+        )),
         else_=0.0
     ).label("ranking_score")
 
     return db.query(Place).order_by(ranking_score.desc()).limit(limit).all()
 
-def get_new_places(db: Session, limit: int = 5) -> List[Place]:
+def get_new_places(db: Session, limit: int = 25) -> List[Place]:
     return db.query(Place).order_by(Place.created_at.desc()).limit(limit).all()

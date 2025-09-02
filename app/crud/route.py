@@ -77,22 +77,19 @@ def search_by_tags(
     )
 
 
-def get_ranked_routes(db: Session, limit: int = 5) -> List[Route]:
-    # n = 전체 투표 수 (실수로 변환), p = 긍정 투표 비율
+def get_ranked_routes(db: Session, limit: int = 25) -> List[Route]:
     n = (Route.count_real + Route.count_bad).cast(Float)
-    p = (Route.count_real).cast(Float) / n
+    z = 1.96  # 95% 신뢰수준
 
-    # 윌슨 스코어 계산 (z-score for 95% confidence = 1.96)
-    z = 1.96
-    wilson_score = (p + z * z / (2 * n) - z * func.sqrt((p * (1 - p) + z * z / (4 * n)) / n)) / (1 + z * z / n)
-
-    # 투표가 없을 경우(n=0) 0점으로 처리
+    # 윌슨 스코어 계산식을 CASE 안으로 이동하여 0으로 나누기 오류를 원천 방지
     ranking_score = case(
-        (n > 0, wilson_score),
+        (n > 0, (
+            (Route.count_real.cast(Float) / n + (z*z) / (2*n) - z * func.sqrt(( (Route.count_real.cast(Float) / n) * (1 - (Route.count_real.cast(Float) / n)) + (z*z) / (4*n) ) / n)) / (1 + (z*z)/n)
+        )),
         else_=0.0
     ).label("ranking_score")
 
     return db.query(Route).order_by(ranking_score.desc()).limit(limit).all()
 
-def get_new_routes(db: Session, limit: int = 5) -> List[Route]:
+def get_new_routes(db: Session, limit: int = 25) -> List[Route]:
     return db.query(Route).order_by(Route.created_at.desc()).limit(limit).all()

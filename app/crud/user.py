@@ -49,10 +49,10 @@ class CRUDUser:
         result = db.query(subquery.c.rank).filter(subquery.c.id == user_id).first()
         return result[0] if result else None
 
-    def get_best_users(self, db: Session, limit: int = 5) -> List[User]:
+    def get_best_users(self, db: Session, limit: int = 25) -> List[User]:
         return db.query(User).filter(User.ranking.isnot(None)).order_by(User.ranking.asc()).limit(limit).all()
 
-    def get_new_local_users(self, db: Session, limit: int = 5) -> List[User]:
+    def get_new_local_users(self, db: Session, limit: int = 25) -> List[User]:
         return db.query(User).filter(User.is_local == True).order_by(User.created_at.desc()).limit(limit).all()
 
     def get_total_ranked_user_count(self, db: Session) -> int:
