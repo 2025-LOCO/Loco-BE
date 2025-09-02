@@ -1,5 +1,5 @@
 # app/schemas/place.py
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, Field, field_validator
 
 class PlaceCreate(BaseModel):
@@ -43,3 +43,7 @@ class PlaceBase(BaseModel):
     cons: Optional[str] = None
     image_url: Optional[str] = None
     kakao_place_id: Optional[str] = None
+
+class PlaceExploreOut(BaseModel):
+    ranked_places: List[PlaceOut]
+    new_places: List[PlaceOut]
