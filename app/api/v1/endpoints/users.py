@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.core.database import get_db
-from app.schemas.user import UserOut, UserUpdate, UserPublic
+from app.schemas.user import UserOut, UserUpdate, UserPublic, LocoExploreOut
 from app.models import User
 from app.crud.user import crud_user
 from app.utils.security import get_current_user  # 토큰에서 사용자 로드(예시 아래)
@@ -12,6 +12,39 @@ router = APIRouter(prefix="/users", tags=["users"])
 @router.get("/me", response_model=UserOut)
 def me(current: User = Depends(get_current_user)):
     return current
+
+
+@router.get("/loco-explore", response_model=LocoExploreOut, summary="로코탐색 페이지 데이터 조회")
+def get_loco_explore_users(db: Session = Depends(get_db)):
+    best_users_db = crud_user.get_best_users(db, limit=5)
+    new_local_users_db = crud_user.get_new_local_users(db, limit=5)
+
+    # 랭킹 백분율 계산을 위해 전체 랭킹 유저 수를 가져옵니다.
+    total_ranked_users = crud_user.get_total_ranked_user_count(db)
+
+    # 응답 데이터를 담을 리스트를 준비합니다.
+    best_users_response = []
+    if total_ranked_users > 0:
+        for user in best_users_db:
+            user_data = UserPublic.model_validate(user)
+            if user.ranking:
+                # (개인 순위 / 전체 인원) * 100 으로 백분율 계산
+                user_data.ranking_percentile = (user.ranking / total_ranked_users) * 100
+            best_users_response.append(user_data)
+
+    new_local_users_response = []
+    if total_ranked_users > 0:
+        for user in new_local_users_db:
+            user_data = UserPublic.model_validate(user)
+            if user.ranking:
+                # 신규 로코지기 목록에도 동일하게 백분율 계산
+                user_data.ranking_percentile = (user.ranking / total_ranked_users) * 100
+            new_local_users_response.append(user_data)
+
+    return LocoExploreOut(
+        best_users=best_users_response,
+        new_local_users=new_local_users_response
+    )
 
 @router.put("/me", response_model=UserOut)
 def update_me(payload: UserUpdate, db: Session = Depends(get_db), current: User = Depends(get_current_user)):
@@ -44,3 +77,4 @@ def delete_me(db: Session = Depends(get_db), current: User = Depends(get_current
     db.commit()
     # 204 No Content
     return
+

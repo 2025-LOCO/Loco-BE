@@ -1,6 +1,6 @@
 # app/schemas/user.py
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, EmailStr, Field
 from app.models.user import UserGrade
 
@@ -42,6 +42,11 @@ class UserPublic(BaseModel):
     ranking: Optional[int]
     points: int
     grade: UserGrade
+    ranking_percentile: Optional[float] = None
 
     class Config:
         from_attributes = True
+
+class LocoExploreOut(BaseModel):
+    best_users: List[UserPublic]
+    new_local_users: List[UserPublic]
