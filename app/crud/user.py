@@ -1,8 +1,8 @@
 # app/crud/user.py
 from typing import Optional, List
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 from sqlalchemy import func
-from app.models import User
+from app.models import User, Place, Route
 from app.schemas.user import UserCreate, UserUpdate
 
 
@@ -38,7 +38,11 @@ class CRUDUser:
         return user
 
     def get_by_id(self, db: Session, user_id: int) -> Optional[User]:
-        return db.query(User).filter(User.id == user_id).first()
+        # Eager loading 추가
+        return db.query(User).options(
+            selectinload(User.created_places),
+            selectinload(User.created_routes)
+        ).filter(User.id == user_id).first()
 
 
     def get_user_ranking(self, db: Session, user_id: int) -> Optional[int]:
@@ -50,10 +54,18 @@ class CRUDUser:
         return result[0] if result else None
 
     def get_best_users(self, db: Session, limit: int = 25) -> List[User]:
-        return db.query(User).filter(User.ranking.isnot(None)).order_by(User.ranking.asc()).limit(limit).all()
+        # Eager loading 추가
+        return db.query(User).options(
+            selectinload(User.created_places),
+            selectinload(User.created_routes)
+        ).filter(User.ranking.isnot(None)).order_by(User.ranking.asc()).limit(limit).all()
 
     def get_new_local_users(self, db: Session, limit: int = 25) -> List[User]:
-        return db.query(User).filter(User.is_local == True).order_by(User.created_at.desc()).limit(limit).all()
+        # Eager loading 추가
+        return db.query(User).options(
+            selectinload(User.created_places),
+            selectinload(User.created_routes)
+        ).filter(User.is_local == True).order_by(User.created_at.desc()).limit(limit).all()
 
     def get_total_ranked_user_count(self, db: Session) -> int:
         return db.query(User).filter(User.ranking.isnot(None)).count()

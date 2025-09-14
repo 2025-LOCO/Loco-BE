@@ -19,13 +19,20 @@ def me(current: User = Depends(get_current_user)):
 
 @router.get("/loco-explore", response_model=LocoExploreOut, summary="로코탐색 페이지 데이터 조회")
 def get_loco_explore_users(db: Session = Depends(get_db)):
-    # .options(joinedload(User.city))를 추가하여 city 정보를 함께 로드합니다.
+    # crud 함수에서 이미 Eager Loading을 통해 데이터를 가져옵니다.
     best_users_db = crud_user.get_best_users(db, limit=25)
     new_local_users_db = crud_user.get_new_local_users(db, limit=25)
 
     total_ranked_users = crud_user.get_total_ranked_user_count(db)
 
     def to_user_public(user: User, total_ranked: int) -> UserPublic:
+        # '담아요' 수 계산 로직
+        total_likes = 0
+        if user.created_places:
+            total_likes += sum(p.count_real for p in user.created_places)
+        if user.created_routes:
+            total_likes += sum(r.count_real for r in user.created_routes)
+
         user_data = UserPublic(
             id=user.id,
             nickname=user.nickname,
@@ -34,9 +41,7 @@ def get_loco_explore_users(db: Session = Depends(get_db)):
             ranking=user.ranking,
             points=user.points,
             grade=user.grade,
-            # liked는 사용자의 points로 설정
-            liked=user.points,
-            # city 관계가 로드되었는지 확인 후 city_name 설정
+            liked=total_likes,  # 계산된 합계 값을 사용
             city_name=user.city.kor_name if user.city else None,
             ranking_percentile=(user.ranking / total_ranked) * 100 if user.ranking and total_ranked > 0 else None
         )
@@ -65,11 +70,16 @@ def update_me(payload: UserUpdate, db: Session = Depends(get_db), current: User 
 
 @router.get("/{user_id}", response_model=UserPublic, summary="다른 사용자 프로필 상세 조회")
 def read_user_public_profile(user_id: int, db: Session = Depends(get_db)):
-    # .options(joinedload(User.city))를 추가하여 city 정보를 함께 로드합니다.
-    obj = db.query(User).options(joinedload(User.city)).filter(User.id == user_id).first()
-
+    obj = crud_user.get_by_id(db, user_id)
     if not obj:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    # '담아요' 수 계산 로직
+    total_likes = 0
+    if obj.created_places:
+        total_likes += sum(p.count_real for p in obj.created_places)
+    if obj.created_routes:
+        total_likes += sum(r.count_real for r in obj.created_routes)
 
     user_data = UserPublic(
         id=obj.id,
@@ -79,7 +89,7 @@ def read_user_public_profile(user_id: int, db: Session = Depends(get_db)):
         ranking=obj.ranking,
         points=obj.points,
         grade=obj.grade,
-        liked=obj.points,
+        liked=total_likes,  # 계산된 합계 값을 사용
         city_name=obj.city.kor_name if obj.city else None,
     )
     return user_data

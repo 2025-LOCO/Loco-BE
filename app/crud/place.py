@@ -1,9 +1,14 @@
 # app/crud/place.py
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import case, func, Float
 from typing import List, Optional
-from app.models import Place
+from app.models import Place, User # User 모델 추가
 from app.schemas.place import PlaceCreate
+
+# 공통적으로 사용할 Eager Loading 옵션
+eager_loading_options = [
+    joinedload(Place.creator).joinedload(User.city)
+]
 
 def create(db: Session, user_id: int, obj_in: PlaceCreate) -> Place:
     place = Place(
@@ -29,17 +34,16 @@ def create(db: Session, user_id: int, obj_in: PlaceCreate) -> Place:
     return place
 
 def list_all(db: Session, limit: int = 50, offset: int = 0) -> List[Place]:
-    return db.query(Place).order_by(Place.place_id.desc()).offset(offset).limit(limit).all()
+    return db.query(Place).options(*eager_loading_options).order_by(Place.place_id.desc()).offset(offset).limit(limit).all()
 
 def get_by_id(db: Session, place_id: int) -> Optional[Place]:
-    return db.query(Place).filter(Place.place_id == place_id).first()
+    return db.query(Place).options(*eager_loading_options).filter(Place.place_id == place_id).first()
 
 
 def get_ranked_places(db: Session, limit: int = 25) -> List[Place]:
     n = (Place.count_real + Place.count_bad).cast(Float)
     z = 1.96  # 95% 신뢰수준
 
-    # 윌슨 스코어 계산식을 CASE 안으로 이동하여 0으로 나누기 오류를 원천 방지
     ranking_score = case(
         (n > 0, (
             (Place.count_real.cast(Float) / n + (z*z) / (2*n) - z * func.sqrt(( (Place.count_real.cast(Float) / n) * (1 - (Place.count_real.cast(Float) / n)) + (z*z) / (4*n) ) / n)) / (1 + (z*z)/n)
@@ -47,7 +51,7 @@ def get_ranked_places(db: Session, limit: int = 25) -> List[Place]:
         else_=0.0
     ).label("ranking_score")
 
-    return db.query(Place).order_by(ranking_score.desc()).limit(limit).all()
+    return db.query(Place).options(*eager_loading_options).order_by(ranking_score.desc()).limit(limit).all()
 
 def get_new_places(db: Session, limit: int = 25) -> List[Place]:
-    return db.query(Place).order_by(Place.created_at.desc()).limit(limit).all()
+    return db.query(Place).options(*eager_loading_options).order_by(Place.created_at.desc()).limit(limit).all()
