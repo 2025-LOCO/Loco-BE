@@ -46,7 +46,9 @@ createdb -U postgres travel_db
 alembic init alembic
 ```
 
-`alembic.ini`의 `sqlalchemy.url` 또는 `alembic/env.py`에서 `DATABASE_URL`을 참조하도록 설정하세요.
+(중요) 생성된 alembic/env.py 파일을 수정하여, 프로젝트의 .env 파일과 데이터베이스 모델을 직접 참조하도록 설정해야 합니다. (자세한 설정 코드는 프로젝트 내 alembic/env.py 파일 참조)
+
+이렇게 하면 alembic.ini 파일에 데이터베이스 접속 정보를 직접 적을 필요 없이 안전하게 마이그레이션을 관리할 수 있습니다.
 
 ### (중요) pgvector 사용 시 리비전 파일 작성 규칙
 

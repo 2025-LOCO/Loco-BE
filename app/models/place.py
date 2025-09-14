@@ -34,6 +34,10 @@ class Place(Base):
     # 위치 관련 추가 칼럼(필요 시 활성화)
     latitude: Mapped[float] = mapped_column(Float, nullable=False)
     longitude: Mapped[float] = mapped_column(Float, nullable=False)
+    intro: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    phone: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    address_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    link: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
     creator = relationship("User", back_populates="created_places")
     favorites = relationship("FavoritePlace", back_populates="place", cascade="all, delete-orphan")

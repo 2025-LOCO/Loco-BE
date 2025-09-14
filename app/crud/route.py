@@ -1,10 +1,16 @@
 # app/crud/route.py
 from typing import Optional, List
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import case, func, Float
-from app.models import Route
+from app.models import Route, User, RoutePlaceMap, Place, RegionCity
 from app.schemas.route import RouteCreate
 from app.services.vector_service import text_to_vector
+
+# 공통적으로 사용할 Eager Loading 옵션
+eager_loading_options = [
+    joinedload(Route.creator).joinedload(User.city),
+    joinedload(Route.places).joinedload(RoutePlaceMap.place)
+]
 
 def create(db: Session, user_id: int, obj_in: RouteCreate) -> Route:
     tags_text = (
@@ -32,11 +38,12 @@ def create(db: Session, user_id: int, obj_in: RouteCreate) -> Route:
     return route
 
 def get_by_id(db: Session, route_id: int) -> Optional[Route]:
-    return db.query(Route).filter(Route.route_id == route_id).first()
+    return db.query(Route).options(*eager_loading_options).filter(Route.route_id == route_id).first()
 
 def list_all(db: Session, limit: int = 50, offset: int = 0) -> List[Route]:
     return (
         db.query(Route)
+        .options(*eager_loading_options)
         .order_by(Route.route_id.desc())
         .offset(offset)
         .limit(limit)
@@ -54,7 +61,7 @@ def search_by_tags(
     tag_atmosphere: Optional[str] = None,
     tag_place_count: Optional[int] = None,
 ) -> List[Route]:
-    query = db.query(Route)
+    query = db.query(Route).options(*eager_loading_options)
 
     if tag_period is not None:
         query = query.filter(Route.tag_period == tag_period)
@@ -81,7 +88,6 @@ def get_ranked_routes(db: Session, limit: int = 25) -> List[Route]:
     n = (Route.count_real + Route.count_bad).cast(Float)
     z = 1.96  # 95% 신뢰수준
 
-    # 윌슨 스코어 계산식을 CASE 안으로 이동하여 0으로 나누기 오류를 원천 방지
     ranking_score = case(
         (n > 0, (
             (Route.count_real.cast(Float) / n + (z*z) / (2*n) - z * func.sqrt(( (Route.count_real.cast(Float) / n) * (1 - (Route.count_real.cast(Float) / n)) + (z*z) / (4*n) ) / n)) / (1 + (z*z)/n)
@@ -89,7 +95,7 @@ def get_ranked_routes(db: Session, limit: int = 25) -> List[Route]:
         else_=0.0
     ).label("ranking_score")
 
-    return db.query(Route).order_by(ranking_score.desc()).limit(limit).all()
+    return db.query(Route).options(*eager_loading_options).order_by(ranking_score.desc()).limit(limit).all()
 
 def get_new_routes(db: Session, limit: int = 25) -> List[Route]:
-    return db.query(Route).order_by(Route.created_at.desc()).limit(limit).all()
+    return db.query(Route).options(*eager_loading_options).order_by(Route.created_at.desc()).limit(limit).all()

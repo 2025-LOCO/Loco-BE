@@ -13,6 +13,10 @@ class PlaceCreate(BaseModel):
     latitude: float
     longitude: float
     kakao_place_id: Optional[str] = Field(None, max_length=64)
+    intro: Optional[str] = Field(None, max_length=255)
+    phone: Optional[str] = Field(None, max_length=20)
+    address_name: Optional[str] = Field(None, max_length=255)
+    link: Optional[str] = Field(None, max_length=255)
 
 class PlaceOut(BaseModel):
     place_id: int
@@ -29,6 +33,13 @@ class PlaceOut(BaseModel):
     latitude: float
     longitude: float
     kakao_place_id: Optional[str] = None
+    intro: Optional[str] = None
+    phone: Optional[str] = None
+    address_name: Optional[str] = None
+    link: Optional[str] = None
+    liked: int
+    user_id: int
+    city_name: Optional[str] = None
 
     class Config:
         from_attributes = True

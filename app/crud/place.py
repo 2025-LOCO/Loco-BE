@@ -18,6 +18,10 @@ def create(db: Session, user_id: int, obj_in: PlaceCreate) -> Place:
         longitude=obj_in.longitude,
         kakao_place_id=obj_in.kakao_place_id,
         created_by=user_id,
+        intro=obj_in.intro,
+        phone=obj_in.phone,
+        address_name=obj_in.address_name,
+        link=obj_in.link,
     )
     db.add(place)
     db.commit()

@@ -35,7 +35,7 @@ class UserOut(BaseModel):
 class UserPublic(BaseModel):
     id: int
     nickname: Optional[str] = None
-    city_id: Optional[str] = None
+    city_name: Optional[str] = None
     intro: Optional[str] = None
     avatar_url: Optional[str] = None
     created_at: Optional[datetime] = None
@@ -43,6 +43,7 @@ class UserPublic(BaseModel):
     points: int
     grade: UserGrade
     ranking_percentile: Optional[float] = None
+    liked: int
 
     class Config:
         from_attributes = True
