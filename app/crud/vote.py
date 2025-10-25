@@ -30,7 +30,7 @@ def vote_route(db: Session, user_id: int, route_id: int, vote: VoteType) -> Rout
     db.flush()
     route = db.get(Route, route_id)
     route.count_real = db.query(RouteVote).filter_by(route_id=route_id, vote_type=VoteType.real).count()
-    route.count_normal = db.query(RouteVote).filter_by(route_id=route_id, vote_type=VoteType.normal).count()
+    route.count_soso = db.query(RouteVote).filter_by(route_id=route_id, vote_type=VoteType.normal).count()
     route.count_bad = db.query(RouteVote).filter_by(route_id=route_id, vote_type=VoteType.bad).count()
     db.commit()
     db.refresh(rv)
