@@ -3,24 +3,22 @@ from pydantic import BaseModel, Field
 
 # 설문 입력
 class SurveyAnswer(BaseModel):
-    # Q1: 기간 (일수), "한 달 살기", "장기 여행" 문자열도 허용하려면 별도 엔드포인트에서 전처리 가능
-    period_days: Optional[int] = Field(None, ge=1, le=31)  # 1~31일
-    is_one_month: Optional[bool] = False                   # 한 달 살기
-    is_long_term: Optional[bool] = False                   # 장기 여행
+    # Q1: 기간
+    period: Optional[str] = Field(None, pattern="^(당일치기|1박2일|2박3일|3박4일|장기여행)$")
 
     # Q2: 장소 선호
-    env: Optional[str] = Field(None, pattern="^(sea|mountain|city|country)$")
+    env: Optional[str] = Field(None, pattern="^(바다|산|도시|농촌)$")
 
     # Q3: 동행
-    with_whom: Optional[str] = Field(None, pattern="^(alone|friend|love|family|pet)$")
+    with_whom: Optional[str] = Field(None, pattern="^(혼자|친구|연인|가족|반려동물)$")
 
     # Q4: 이동수단
-    move: Optional[str] = Field(None, pattern="^(walk|bicycle|car|train|public)$")
+    move: Optional[str] = Field(None, pattern="^(걸어서|자전거|자동차|기차|버스)$")
 
     # Q5: 분위기
     atmosphere: Optional[str] = Field(
         None,
-        pattern="^(잔잔하고 조용한|활기차고 신나는|아늑하고 로맨틱한|자유롭고 감성적인|자연과 함께하는)$"
+        pattern="^(잔잔하고 조용한|신나는 액티비티|다채로운 경험|맛있는 여행|아늑하고 로맨틱한)$"
     )
 
     # Q6: 하루 방문지 수
