@@ -12,13 +12,15 @@ class Route(Base):
 
     route_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(255), index=True)
+    intro: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    location: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     is_recommend: Mapped[bool] = mapped_column(Boolean, default=False)  # 추천/직접만든 구분
     created_by: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     image_url: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     count_real: Mapped[int] = mapped_column(Integer, default=0)
-    count_normal: Mapped[int] = mapped_column(Integer, default=0)
+    count_soso: Mapped[int] = mapped_column(Integer, default=0)
     count_bad: Mapped[int] = mapped_column(Integer, default=0)
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

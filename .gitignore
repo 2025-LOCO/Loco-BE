@@ -42,6 +42,9 @@ htmlcov/
 # Alembic
 alembic/versions/*.py
 !alembic/versions/__init__.py
+.alemic
 
 # Scripts
 scripts/seed.sql
+
+.cursor

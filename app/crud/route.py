@@ -19,6 +19,7 @@ def create(db: Session, user_id: int, obj_in: RouteCreate) -> Route:
         f"{obj_in.tag_atmosphere or ''}"
     )
     embedding_vector = text_to_vector(tags_text) if tags_text.strip() else None
+    
     route = Route(
         name=obj_in.name,
         is_recommend=obj_in.is_recommend,
@@ -33,12 +34,40 @@ def create(db: Session, user_id: int, obj_in: RouteCreate) -> Route:
         embedding=embedding_vector
     )
     db.add(route)
+    db.flush()  # flush to get the route_id for the new route
+
+    # Create RoutePlaceMap entries for places
+    for place_data in obj_in.places:
+        db_place = db.query(Place).filter(Place.place_id == place_data.place_id).first()
+        if db_place:
+            route_place_map = RoutePlaceMap(
+                route_id=route.route_id,
+                place_id=db_place.place_id,
+                day=place_data.day,
+                order=place_data.order,
+                is_transportation=False
+            )
+            db.add(route_place_map)
+
+    # Create RoutePlaceMap entries for transportations
+    for trans_data in obj_in.transportations:
+        route_place_map = RoutePlaceMap(
+            route_id=route.route_id,
+            day=trans_data.day,
+            order=trans_data.order,
+            is_transportation=True,
+            transportation=trans_data.name
+        )
+        db.add(route_place_map)
+
     db.commit()
     db.refresh(route)
     return route
 
 def get_by_id(db: Session, route_id: int) -> Optional[Route]:
-    return db.query(Route).options(*eager_loading_options).filter(Route.route_id == route_id).first()
+    return db.query(Route).options(
+        joinedload(Route.places).joinedload(RoutePlaceMap.place)
+    ).filter(Route.route_id == route_id).first()
 
 def list_all(db: Session, limit: int = 50, offset: int = 0) -> List[Route]:
     return (

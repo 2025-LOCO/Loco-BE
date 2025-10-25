@@ -37,6 +37,7 @@ class Place(Base):
     intro: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     phone: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     address_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    short_location: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     link: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
     creator = relationship("User", back_populates="created_places")

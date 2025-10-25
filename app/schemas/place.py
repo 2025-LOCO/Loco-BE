@@ -16,6 +16,7 @@ class PlaceCreate(BaseModel):
     intro: Optional[str] = Field(None, max_length=255)
     phone: Optional[str] = Field(None, max_length=20)
     address_name: Optional[str] = Field(None, max_length=255)
+    short_location: Optional[str] = Field(None, max_length=100)
     link: Optional[str] = Field(None, max_length=255)
 
 class PlaceOut(BaseModel):
@@ -55,6 +56,16 @@ class PlaceBase(BaseModel):
     image_url: Optional[str] = None
     kakao_place_id: Optional[str] = None
 
+
+class PlaceSearchResult(BaseModel):
+    member_id: int
+    place_id: int
+    name: str
+    image_url: Optional[str] = None
+    liked: int
+    short_location: Optional[str] = None
+    intro: Optional[str] = None
+
 class PlaceExploreOut(BaseModel):
-    ranked_places: List[PlaceOut]
-    new_places: List[PlaceOut]
+    ranked_places: List[PlaceSearchResult]
+    new_places: List[PlaceSearchResult]

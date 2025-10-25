@@ -1,8 +1,9 @@
 # app/api/v1/endpoints/users.py
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session, joinedload
+from typing import List
 from app.core.database import get_db
-from app.schemas.user import UserOut, UserUpdate, UserPublic, LocoExploreOut
+from app.schemas.user import UserOut, UserUpdate, UserPublic, LocoExploreOut, ProfileSearchResult
 from app.models import User, RegionCity
 from app.crud.user import crud_user
 from app.utils.security import get_current_user
@@ -15,6 +16,32 @@ router = APIRouter(prefix="/users", tags=["users"])
 @router.get("/me", response_model=UserOut)
 def me(current: User = Depends(get_current_user)):
     return current
+
+
+def to_profile_search_result(user: User) -> ProfileSearchResult:
+    # '담아요' 수 계산 로직
+    total_likes = 0
+    if user.created_places:
+        total_likes += sum(p.count_real for p in user.created_places)
+    if user.created_routes:
+        total_likes += sum(r.count_real for r in user.created_routes)
+    
+    return ProfileSearchResult(
+        id=user.id,
+        name=user.nickname,
+        intro=user.intro,
+        image_url=user.image_url,
+        liked=total_likes,
+        rank=user.ranking,
+        location=user.city.kor_name if user.city else None
+    )
+
+
+@router.get("/explore", response_model=List[ProfileSearchResult], summary="프로필 탐색 페이지 데이터 조회")
+def get_user_explore(db: Session = Depends(get_db)):
+    best_users_db = crud_user.get_best_users(db, limit=50) # 예시로 50명 조회
+    
+    return [to_profile_search_result(u) for u in best_users_db]
 
 
 @router.get("/loco-explore", response_model=LocoExploreOut, summary="로코탐색 페이지 데이터 조회")
@@ -60,6 +87,7 @@ def get_loco_explore_users(db: Session = Depends(get_db)):
 def update_me(payload: UserUpdate, db: Session = Depends(get_db), current: User = Depends(get_current_user)):
     current.nickname = payload.nickname or current.nickname
     current.intro = payload.intro if payload.intro is not None else current.intro
+    current.image_url = payload.image_url if payload.image_url is not None else current.image_url
     current.city_id = payload.city_id if payload.city_id is not None else current.city_id
     db.commit()
     db.refresh(current)

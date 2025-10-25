@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.database import get_db
-from app.schemas.place import PlaceCreate, PlaceOut, PlaceExploreOut
+from app.schemas.place import PlaceCreate, PlaceOut, PlaceExploreOut, PlaceSearchResult
 from app.crud import place as crud_place
 from app.models import User, Place # Place 모델 추가
 from app.utils.security import get_current_user
@@ -36,13 +36,25 @@ def to_place_out(place: Place) -> PlaceOut:
         city_name=place.creator.city.kor_name if place.creator and place.creator.city else None,
     )
 
+# Place 모델 객체를 PlaceSearchResult 스키마로 변환하는 헬퍼 함수
+def to_place_search_result(place: Place) -> PlaceSearchResult:
+    return PlaceSearchResult(
+        member_id=place.created_by,
+        place_id=place.place_id,
+        name=place.name,
+        image_url=place.image_url,
+        liked=place.count_real,
+        short_location=place.short_location,
+        intro=place.intro
+    )
+
 @router.get("/explore", response_model=PlaceExploreOut, summary="장소 탐색 페이지 데이터 조회")
 def get_place_explore(db: Session = Depends(get_db)):
     ranked_places_db = crud_place.get_ranked_places(db, limit=25)
     new_places_db = crud_place.get_new_places(db, limit=25)
 
-    ranked_places = [to_place_out(p) for p in ranked_places_db]
-    new_places = [to_place_out(p) for p in new_places_db]
+    ranked_places = [to_place_search_result(p) for p in ranked_places_db]
+    new_places = [to_place_search_result(p) for p in new_places_db]
 
     return PlaceExploreOut(
         ranked_places=ranked_places,

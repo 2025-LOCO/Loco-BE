@@ -35,6 +35,7 @@ class User(Base):
     # 프로필
     nickname: Mapped[str] = mapped_column(String(10), unique=True, index=True)
     intro: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    image_url: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     city_id: Mapped[Optional[str]] = mapped_column(ForeignKey("region_cities.region_id"), nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

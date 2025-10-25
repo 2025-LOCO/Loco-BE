@@ -16,6 +16,7 @@ class UserCreate(UserBase):
 class UserUpdate(BaseModel):
     nickname: Optional[str] = Field(None, max_length=10)
     intro: Optional[str] = Field(None, max_length=50)
+    image_url: Optional[str] = Field(None, max_length=255)
     city_id: Optional[str] = None
 
 class UserOut(BaseModel):
@@ -23,6 +24,7 @@ class UserOut(BaseModel):
     email: EmailStr
     nickname: str
     intro: Optional[str]
+    image_url: Optional[str]
     city_id: Optional[str]
     created_at: datetime
     ranking: Optional[int]
@@ -47,6 +49,15 @@ class UserPublic(BaseModel):
 
     class Config:
         from_attributes = True
+
+class ProfileSearchResult(BaseModel):
+    id: int
+    name: str
+    intro: Optional[str] = None
+    image_url: Optional[str] = None
+    liked: int
+    rank: Optional[int] = None
+    location: Optional[str] = None
 
 class LocoExploreOut(BaseModel):
     best_users: List[UserPublic]

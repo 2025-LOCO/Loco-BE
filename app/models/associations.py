@@ -52,9 +52,9 @@ class RoutePlaceMap(Base):
     route_id: Mapped[int] = mapped_column(ForeignKey("routes.route_id"), nullable=False, index=True)
     place_id: Mapped[int] = mapped_column(ForeignKey("places.place_id"), nullable=False, index=True)
 
-    order: Mapped[int] = mapped_column()  # 루트 내 순서
-    is_transportation: Mapped[bool] = mapped_column(default=False)
-    transportation_name: Mapped[Optional[str]] = mapped_column(String(10), nullable=True)
+    order: Mapped[int] = mapped_column(Integer, nullable=False)
+    memo: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    transportation: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
 
     route = relationship("Route", back_populates="places")
     place = relationship("Place", back_populates="route_maps")
