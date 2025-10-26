@@ -163,17 +163,19 @@ def get_regions_from_public_api(sido_code: str | None = None):
             # 시/군/구 목록 변환
             return [
                 {
-                    "cd": f"{item['lDongRegnCd']}{item['lDongSignguCd']}",
-                    "name": item['lDongSignguNm'],
-                    "full_name": f"{item['lDongRegnNm']} {item['lDongSignguNm']}",
+                    "cd": f"{item.get('lDongRegnCd', '')}{item.get('lDongSignguCd', '')}",
+                    "name": item.get('lDongSignguNm', ''),
+                    "full_name": f"{item.get('lDongRegnNm', '')} {item.get('lDongSignguNm', '')}",
                 }
                 for item in items
+                if "lDongRegnCd" in item and "lDongSignguCd" in item
             ]
         else:
             # 시/도 목록 변환
             return [
-                {"cd": item["lDongRegnCd"], "name": item["lDongRegnNm"]}
+                {"cd": item["lDongRegnCd"], "name": item.get("lDongRegnNm", "")}
                 for item in items
+                if "lDongRegnCd" in item
             ]
 
     except requests.exceptions.RequestException as e:

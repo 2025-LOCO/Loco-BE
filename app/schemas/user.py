@@ -30,6 +30,13 @@ class UserOut(BaseModel):
     ranking: Optional[int]
     points: int
     grade: UserGrade
+    my_places_count: int = 0
+    my_routes_count: int = 0
+    my_answers_count: int = 0
+    my_places_liked_count: int = 0
+    my_routes_liked_count: int = 0
+    places_loco_count: List[int] = [0, 0, 0]
+    routes_loco_count: List[int] = [0, 0, 0]
 
     class Config:
         from_attributes = True

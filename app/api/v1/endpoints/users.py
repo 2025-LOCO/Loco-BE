@@ -7,6 +7,7 @@ from app.schemas.user import UserOut, UserUpdate, UserPublic, LocoExploreOut, Pr
 from app.models import User, RegionCity
 from app.crud.user import crud_user
 from app.utils.security import get_current_user
+from app.crud import place as crud_place, route as crud_route, qna as crud_qna
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -14,8 +15,16 @@ router = APIRouter(prefix="/users", tags=["users"])
 # --- 순서 보장을 위해 고정 경로를 먼저 배치 ---
 
 @router.get("/me", response_model=UserOut)
-def me(current: User = Depends(get_current_user)):
-    return current
+def me(db: Session = Depends(get_db), current: User = Depends(get_current_user)):
+    user_data = UserOut.from_orm(current)
+    user_data.my_places_count = crud_place.count_by_user(db, current.id)
+    user_data.my_routes_count = crud_route.count_by_user(db, current.id)
+    user_data.my_answers_count = crud_qna.count_answers_by_user(db, current.id)
+    user_data.my_places_liked_count = crud_place.sum_likes_by_user(db, current.id)
+    user_data.my_routes_liked_count = crud_route.sum_likes_by_user(db, current.id)
+    user_data.places_loco_count = crud_place.sum_loco_count_by_user(db, current.id)
+    user_data.routes_loco_count = crud_route.sum_loco_count_by_user(db, current.id)
+    return user_data
 
 
 def to_profile_search_result(user: User) -> ProfileSearchResult:

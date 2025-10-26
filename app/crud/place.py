@@ -55,3 +55,18 @@ def get_ranked_places(db: Session, limit: int = 25) -> List[Place]:
 
 def get_new_places(db: Session, limit: int = 25) -> List[Place]:
     return db.query(Place).options(*eager_loading_options).order_by(Place.created_at.desc()).limit(limit).all()
+
+def count_by_user(db: Session, user_id: int) -> int:
+    return db.query(Place).filter(Place.created_by == user_id).count()
+
+def sum_likes_by_user(db: Session, user_id: int) -> int:
+    total_likes = db.query(func.sum(Place.count_real)).filter(Place.created_by == user_id).scalar()
+    return total_likes if total_likes is not None else 0
+
+def sum_loco_count_by_user(db: Session, user_id: int) -> List[int]:
+    result = db.query(
+        func.sum(Place.count_real),
+        func.sum(Place.count_normal),
+        func.sum(Place.count_bad)
+    ).filter(Place.created_by == user_id).first()
+    return [result[0] or 0, result[1] or 0, result[2] or 0]

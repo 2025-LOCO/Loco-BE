@@ -24,3 +24,6 @@ def create_answer(db: Session, user_id: int, obj_in: AnswerCreate) -> Answer:
     db.commit()
     db.refresh(a)
     return a
+
+def count_answers_by_user(db: Session, user_id: int) -> int:
+    return db.query(Answer).filter(Answer.user_id == user_id).count()
