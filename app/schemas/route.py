@@ -1,5 +1,6 @@
 # app/schemas/route.py
 from typing import Optional, List
+from datetime import datetime
 from pydantic import BaseModel, Field
 
 class RoutePlaceCreate(BaseModel):
@@ -63,6 +64,7 @@ class LocoRoute(BaseModel):
     count_real: Optional[int] = Field(None, alias='countReal')
     count_soso: Optional[int] = Field(None, alias='countSoso')
     count_bad: Optional[int] = Field(None, alias='countBad')
+    created_at: datetime
 
     class Config:
         from_attributes = True
@@ -83,6 +85,7 @@ class RouteOut(BaseModel):
     tags: HashTag
     places: List[RoutePlace]
     transportations: List[Transportation]
+    created_at: datetime
 
     class Config:
         from_attributes = True

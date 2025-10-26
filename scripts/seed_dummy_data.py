@@ -468,6 +468,8 @@ def create_routes(db: Session, users):
     """여행 루트 데이터를 생성합니다."""
     print("\n여행 루트 데이터를 생성하는 중...")
     
+    now = datetime.now()
+    
     routes = [
         Route(
             route_id=1,
@@ -480,6 +482,7 @@ def create_routes(db: Session, users):
             count_real=20,
             count_soso=5,
             count_bad=1,
+            created_at=now - timedelta(days=10),
             tag_period=1,  # 당일
             tag_env="city",
             tag_with="friend",
@@ -498,6 +501,7 @@ def create_routes(db: Session, users):
             count_real=35,
             count_soso=8,
             count_bad=2,
+            created_at=now - timedelta(days=8),
             tag_period=2,  # 1박 2일
             tag_env="sea",
             tag_with="love",
@@ -516,6 +520,7 @@ def create_routes(db: Session, users):
             count_real=28,
             count_soso=6,
             count_bad=1,
+            created_at=now - timedelta(days=5),
             tag_period=1,
             tag_env="city",
             tag_with="family",
@@ -534,6 +539,7 @@ def create_routes(db: Session, users):
             count_real=45,
             count_soso=10,
             count_bad=3,
+            created_at=now - timedelta(days=3),
             tag_period=3,  # 2박 3일
             tag_env="sea",
             tag_with="friend",
@@ -552,6 +558,7 @@ def create_routes(db: Session, users):
             count_real=18,
             count_soso=7,
             count_bad=4,
+            created_at=now - timedelta(days=2),
             tag_period=1,
             tag_env="city",
             tag_with="friend",
@@ -570,6 +577,7 @@ def create_routes(db: Session, users):
             count_real=25,
             count_soso=12,
             count_bad=5,
+            created_at=now - timedelta(days=1),
             tag_period=2,
             tag_env="sea",
             tag_with="love",

@@ -65,6 +65,7 @@ def to_loco_route(route: "Route") -> LocoRoute:
         count_real=route.count_real,
         count_soso=route.count_soso,
         count_bad=route.count_bad,
+        created_at=route.created_at,
     )
 
 
