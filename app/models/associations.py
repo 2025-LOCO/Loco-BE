@@ -50,9 +50,11 @@ class RoutePlaceMap(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     route_id: Mapped[int] = mapped_column(ForeignKey("routes.route_id"), nullable=False, index=True)
-    place_id: Mapped[int] = mapped_column(ForeignKey("places.place_id"), nullable=False, index=True)
+    place_id: Mapped[Optional[int]] = mapped_column(ForeignKey("places.place_id"), nullable=True, index=True)
 
+    day: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     order: Mapped[int] = mapped_column(Integer, nullable=False)
+    is_transportation: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     memo: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     transportation: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
 

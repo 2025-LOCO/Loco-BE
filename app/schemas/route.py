@@ -89,8 +89,8 @@ class RouteOut(BaseModel):
         populate_by_name = True
 
 class RouteExploreOut(BaseModel):
-    ranked_routes: List[RouteOut] = Field(..., alias='rankedRoutes')
-    new_routes: List[RouteOut] = Field(..., alias='newRoutes')
+    ranked_routes: List[LocoRoute]
+    new_routes: List[LocoRoute]
 
     class Config:
         populate_by_name = True

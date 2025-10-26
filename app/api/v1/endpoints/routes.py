@@ -68,10 +68,18 @@ def to_loco_route(route: "Route") -> LocoRoute:
     )
 
 
-@router.get("/explore", response_model=List[LocoRoute], summary="루트 탐색 페이지 데이터 조회")
+@router.get("/explore", response_model=RouteExploreOut, summary="루트 탐색 페이지 데이터 조회")
 def get_route_explore(db: Session = Depends(get_db)):
-    ranked_routes_db = crud_route.get_ranked_routes(db, limit=50)
-    return [to_loco_route(r) for r in ranked_routes_db]
+    ranked_routes_db = crud_route.get_ranked_routes(db, limit=25)
+    new_routes_db = crud_route.get_new_routes(db, limit=25)
+    
+    ranked_routes = [to_loco_route(r) for r in ranked_routes_db]
+    new_routes = [to_loco_route(r) for r in new_routes_db]
+    
+    return RouteExploreOut(
+        rankedRoutes=ranked_routes,
+        newRoutes=new_routes
+    )
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
