@@ -33,7 +33,12 @@ def login(form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get
     if not u or not pwd_context.verify(form.password, u.hashed_password):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid credentials")
     token = create_access_token({"sub": str(u.id), "ver": u.token_version})
-    return {"access_token": token, "token_type": "bearer"}
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user_id": u.id,
+        "user_nickname": u.nickname,
+    }
 
 @router.post("/logout", status_code=200, summary="로그아웃")
 def logout(db: Session = Depends(get_db), current: User = Depends(get_current_user)):
