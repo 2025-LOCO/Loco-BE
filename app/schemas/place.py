@@ -38,8 +38,8 @@ class PlaceOut(BaseModel):
     phone: Optional[str] = None
     address_name: Optional[str] = None
     link: Optional[str] = None
-    liked: int
-    user_id: int
+    liked: Optional[int] = None
+    user_id: Optional[int] = None
     city_name: Optional[str] = None
 
     class Config:

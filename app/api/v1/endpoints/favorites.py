@@ -10,6 +10,8 @@ from app.schemas.favorite import (
 from app.crud import favorite as crud_fav
 from app.models import User
 from app.utils.security import get_current_user
+from app.api.v1.endpoints.routes import to_loco_route
+
 
 router = APIRouter(prefix="/favorites", tags=["favorites"])
 
@@ -23,13 +25,25 @@ def add_fav_route(body: FavoriteRouteCreate, db: Session = Depends(get_db), curr
     return crud_fav.add_favorite_route(db, current.id, body.route_id)
 
 # NEW: list my favorites
-@router.get("/places/me", response_model=List[FavoritePlaceOut])
-def list_my_fav_places(db: Session = Depends(get_db), current: User = Depends(get_current_user)):
-    return crud_fav.list_my_favorite_places(db, current.id)
+@router.get("/places/{user_id}", response_model=List[FavoritePlaceOut])
+def list_my_fav_places(user_id: int, db: Session = Depends(get_db)):
+    return crud_fav.list_my_favorite_places(db, user_id)
 
-@router.get("/routes/me", response_model=List[FavoriteRouteOut])
-def list_my_fav_routes(db: Session = Depends(get_db), current: User = Depends(get_current_user)):
-    return crud_fav.list_my_favorite_routes(db, current.id)
+@router.get("/routes/{user_id}", response_model=List[FavoriteRouteOut])
+def list_my_fav_routes(user_id: int, db: Session = Depends(get_db)):
+    favorite_routes = crud_fav.list_my_favorite_routes(db, user_id)
+    
+    response = []
+    for fav_route in favorite_routes:
+        processed_route = to_loco_route(fav_route.route) if fav_route.route else None
+        response.append(FavoriteRouteOut(
+            id=fav_route.id,
+            user_id=fav_route.user_id,
+            route_id=fav_route.route_id,
+            created_at=fav_route.created_at,
+            route=processed_route
+        ))
+    return response
 
 # NEW: remove from favorites
 @router.delete("/places/{place_id}", status_code=status.HTTP_204_NO_CONTENT)

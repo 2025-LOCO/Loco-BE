@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel
 from app.schemas.place import PlaceOut
-from app.schemas.route import RouteOut
+from app.schemas.route import LocoRoute
 
 class FavoritePlaceCreate(BaseModel):
     place_id: int
@@ -27,7 +27,7 @@ class FavoriteRouteOut(BaseModel):
     user_id: int
     route_id: int
     created_at: datetime
-    route: Optional[RouteOut]
+    route: Optional[LocoRoute]
 
     class Config:
         from_attributes = True
