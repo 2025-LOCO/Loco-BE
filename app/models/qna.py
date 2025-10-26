@@ -14,7 +14,7 @@ class Question(Base):
 
     title: Mapped[str] = mapped_column(String(50))
     content: Mapped[str] = mapped_column(Text)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.current_timestamp())
 
     view_count: Mapped[int] = mapped_column(Integer, default=0)
     answer_count: Mapped[int] = mapped_column(Integer, default=0)
@@ -31,7 +31,7 @@ class Answer(Base):
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     question_id: Mapped[int] = mapped_column(ForeignKey("questions.question_id"), index=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.current_timestamp())
 
     # 답변 반응 (선택)
     vote_type: Mapped[Optional[VoteType]] = mapped_column(Enum(VoteType), nullable=True)
