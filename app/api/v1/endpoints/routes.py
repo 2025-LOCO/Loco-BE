@@ -42,14 +42,15 @@ def to_loco_route(route: "Route") -> LocoRoute:
                 ))
 
     # 태그 정보 가공
-    tags_schema = HashTag(
-        period=str(route.tag_period or ''),
-        env=str(route.tag_env or ''),
-        with_who=str(route.tag_with or ''),
-        move=str(route.tag_move or ''),
-        atmosphere=str(route.tag_atmosphere or ''),
-        place_count=str(route.tag_place_count or '')
-    )
+    tag_data = {
+        "period": str(route.tag_period or ''),
+        "env": str(route.tag_env or ''),
+        "with": str(route.tag_with or ''),
+        "move": str(route.tag_move or ''),
+        "atmosphere": str(route.tag_atmosphere or ''),
+        "place_count": str(route.tag_place_count or '')
+    }
+    tags_schema = HashTag.model_validate(tag_data)
 
     return LocoRoute(
         user_id=route.created_by,
@@ -78,8 +79,8 @@ def get_route_explore(db: Session = Depends(get_db)):
     new_routes = [to_loco_route(r) for r in new_routes_db]
     
     return RouteExploreOut(
-        rankedRoutes=ranked_routes,
-        newRoutes=new_routes
+        ranked_routes=ranked_routes,
+        new_routes=new_routes
     )
 
 
