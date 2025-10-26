@@ -15,7 +15,12 @@ def list_questions(db: Session, limit: int = 50, offset: int = 0) -> List[Questi
     return db.query(Question).order_by(Question.question_id.desc()).offset(offset).limit(limit).all()
 
 def create_answer(db: Session, user_id: int, obj_in: AnswerCreate) -> Answer:
-    a = Answer(user_id=user_id, question_id=obj_in.question_id, content=obj_in.content)
+    a = Answer(
+        user_id=user_id,
+        question_id=obj_in.question_id,
+        content=obj_in.content,
+        vote_type=obj_in.like
+    )
     db.add(a)
     # answer_count 증가
     db.flush()

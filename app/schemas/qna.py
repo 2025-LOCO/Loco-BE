@@ -1,7 +1,8 @@
 # app/schemas/qna.py
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 from pydantic import BaseModel, Field
+from app.models.vote_enums import VoteType
 
 class QuestionCreate(BaseModel):
     title: str = Field(..., max_length=50)
@@ -15,6 +16,7 @@ class QuestionOut(BaseModel):
     created_at: datetime
     view_count: int
     answer_count: int
+    answers: List["AnswerOut"] = []
 
     class Config:
         from_attributes = True
@@ -22,6 +24,7 @@ class QuestionOut(BaseModel):
 class AnswerCreate(BaseModel):
     question_id: int
     content: str
+    like: Optional[VoteType] = None
 
 class AnswerOut(BaseModel):
     answer_id: int
@@ -29,6 +32,8 @@ class AnswerOut(BaseModel):
     question_id: int
     content: str
     created_at: datetime
+    user_nickname: str
+    vote_type: Optional[VoteType] = None
 
     class Config:
         from_attributes = True

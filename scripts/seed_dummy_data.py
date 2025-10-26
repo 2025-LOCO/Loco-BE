@@ -764,7 +764,7 @@ def create_qna(db: Session, users):
             user_id=1,
             question_id=1,
             content="화성은 생각보다 넓어서 천천히 둘러보시면 3-4시간 정도 걸립니다. 편한 신발 꼭 신으시고, 여름에는 물 챙겨가세요. 행궁동 쪽에 맛집도 많으니 점심 시간 고려해서 계획 짜시면 좋아요!",
-            vote_type=None,
+            vote_type=VoteType.real,
             created_at=datetime.now() - timedelta(days=4)
         ),
         Answer(
@@ -772,7 +772,7 @@ def create_qna(db: Session, users):
             user_id=4,
             question_id=1,
             content="저도 최근에 다녀왔는데 정말 좋았어요. 화성행궁 앞에서 수원 화성 투어 가이드 신청하시면 더 알차게 둘러볼 수 있습니다!",
-            vote_type=None,
+            vote_type=VoteType.real,
             created_at=datetime.now() - timedelta(days=4, hours=5)
         ),
         
@@ -782,7 +782,7 @@ def create_qna(db: Session, users):
             user_id=3,
             question_id=2,
             content="해운대 시장 지하주차장이나 해운대 비치 아파트 주차장을 이용하시면 됩니다. 주말에는 일찍 가셔야 자리가 있어요. 아니면 지하철 이용하시는 게 더 편할 수도 있습니다.",
-            vote_type=None,
+            vote_type=VoteType.normal,
             created_at=datetime.now() - timedelta(days=2)
         ),
         
@@ -792,7 +792,7 @@ def create_qna(db: Session, users):
             user_id=5,
             question_id=3,
             content="제주도는 렌터카가 거의 필수입니다. 대중교통이 있긴 하지만 배차 간격이 길고, 가고 싶은 곳을 자유롭게 다니기 어렵습니다. 렌터카 빌리시는 걸 강력 추천드려요!",
-            vote_type=None,
+            vote_type=VoteType.real,
             created_at=datetime.now() - timedelta(days=6)
         ),
         Answer(
@@ -800,7 +800,7 @@ def create_qna(db: Session, users):
             user_id=3,
             question_id=3,
             content="저는 버스 타고 다녔는데 생각보다 괜찮았어요. 다만 시간 여유가 있으셔야 하고, 계획을 잘 짜셔야 합니다.",
-            vote_type=None,
+            vote_type=VoteType.normal,
             created_at=datetime.now() - timedelta(days=6, hours=3)
         ),
         Answer(
@@ -808,7 +808,7 @@ def create_qna(db: Session, users):
             user_id=2,
             question_id=3,
             content="일정이 빡빡하시면 렌터카 추천드리고, 여유있게 관광지 위주로만 다니신다면 택시나 버스 이용도 괜찮습니다.",
-            vote_type=None,
+            vote_type=VoteType.normal,
             created_at=datetime.now() - timedelta(days=5, hours=10)
         ),
         
@@ -818,7 +818,7 @@ def create_qna(db: Session, users):
             user_id=4,
             question_id=4,
             content="홍대입구역 근처 '국밥집'이랑 '통닭집' 추천드립니다. 양도 많고 가격도 저렴해요. 그리고 '순대국집'도 괜찮아요!",
-            vote_type=None,
+            vote_type=VoteType.real,
             created_at=datetime.now() - timedelta(days=1)
         ),
         Answer(
@@ -826,7 +826,7 @@ def create_qna(db: Session, users):
             user_id=1,
             question_id=4,
             content="홍대 뒷골목에 있는 작은 식당들이 가성비 좋아요. 특히 점심 시간에 가면 세트 메뉴가 저렴합니다.",
-            vote_type=None,
+            vote_type=VoteType.bad,
             created_at=datetime.now() - timedelta(days=1, hours=3)
         ),
     ]
