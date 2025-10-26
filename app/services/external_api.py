@@ -11,14 +11,8 @@ from app.core.config import settings
 
 TOUR_API_BASE = "https://apis.data.go.kr/B551011/KorService2/searchKeyword2"
 KAKAO_LOCAL_API_BASE = "https://dapi.kakao.com/v2/local/search/keyword.json"
+PUBLIC_DATA_API_LDONG_BASE = "https://apis.data.go.kr/B551011/KorService2/ldongCode2"
 
-SGIS_AUTH_HOST = "https://sgisapi.kostat.go.kr/OpenAPI3/auth/authentication.json"
-SGIS_API_HOST = "https://sgisapi.kostat.go.kr/OpenAPI3/addr/stage.json"
-
-_sgis_token_cache = {
-    "token": None,
-    "expiry": 0  # 토큰 만료 시간 (timestamp)
-}
 
 class LegacySSLAdapter(HTTPAdapter):
     def __init__(self, *args, **kwargs):
@@ -122,62 +116,71 @@ def _parse_tourapi_response(resp: requests.Response):
         )
 
 
-def _get_sgis_token() -> str:
+def get_regions_from_public_api(sido_code: str | None = None):
     """
-    SGIS 인증 토큰을 가져오거나 갱신합니다. (기존 session 객체 사용)
+    공공데이터포털(한국관광공사) API를 사용하여 시/도 또는 시/군/구 목록을 조회합니다.
+    - sido_code가 없으면 시/도 목록을, 있으면 해당 시/도의 시/군/구 목록을 반환합니다.
     """
-    global _sgis_token_cache
-    now = int(time.time())
+    tour_key = getattr(settings, "TOUR_API_KEY", None)
+    if not tour_key:
+        raise HTTPException(status_code=503, detail="TourAPI 키(TOUR_API_KEY)가 설정되어 있지 않습니다.")
 
-    # 1. 캐시된 토큰이 유효하면 반환
-    if _sgis_token_cache["token"] and _sgis_token_cache["expiry"] > now:
-        return _sgis_token_cache["token"]
-
-    # 2. SGIS 키가 설정되어 있는지 확인
-    key = getattr(settings, "SGIS_CONSUMER_KEY", None)
-    secret = getattr(settings, "SGIS_CONSUMER_SECRET", None)
-    if not key or not secret:
-        raise HTTPException(status_code=503, detail="SGIS API 키(SGIS_CONSUMER_KEY)가 설정되지 않았습니다.")
+    params = {
+        "serviceKey": tour_key,
+        "_type": "json",
+        "MobileOS": "WEB",
+        "MobileApp": "loco",
+        "numOfRows": 100,  # 충분한 개수 가져오기
+    }
+    if sido_code:
+        params["lDongRegnCd"] = sido_code
+        params["lDongListYn"] = "Y"
 
     try:
-        # 3. 새 토큰 요청 (기존 session 사용)
-        params = {"consumer_key": key, "consumer_secret": secret}
-        resp = session.get(SGIS_AUTH_HOST, params=params, timeout=5)
-        resp.raise_for_status()  # 200 OK가 아니면 예외 발생
+        resp = session.get(PUBLIC_DATA_API_LDONG_BASE, params=params, timeout=10)
+        resp.raise_for_status()
         data = resp.json()
 
-        access_token = data.get("result", {}).get("accessToken")
-        if not access_token:
-            raise HTTPException(status_code=502, detail="SGIS 토큰 발급 응답 형식이 올바르지 않습니다.")
+        # API 응답 오류 처리
+        header = data.get("response", {}).get("header", {})
+        if header.get("resultCode") != "0000":
+            raise HTTPException(
+                status_code=502,
+                detail=f"공공데이터포털 API 오류: {header.get('resultMsg', 'Unknown error')}",
+            )
 
-        # 4. 캐시 저장 (SGIS 토큰은 2시간 유효, 1시간 50분(6600초)으로 설정)
-        _sgis_token_cache["token"] = access_token
-        _sgis_token_cache["expiry"] = now + 6600
+        items = data.get("response", {}).get("body", {}).get("items", {}).get("item", [])
 
-        return access_token
-    except Exception as e:
-        # 5. 실패 시 캐시 비우기
-        _sgis_token_cache["token"] = None
-        _sgis_token_cache["expiry"] = 0
-        raise HTTPException(status_code=502, detail=f"SGIS 토큰 발급 실패: {str(e)}")
+        # 데이터 형식 변환
+        if not items:
+            return []
+        
+        # 항목이 하나일 경우 dict로 오는 문제 해결
+        if isinstance(items, dict):
+            items = [items]
 
+        if sido_code:
+            # 시/군/구 목록 변환
+            return [
+                {
+                    "cd": f"{item['lDongRegnCd']}{item['lDongSignguCd']}",
+                    "name": item['lDongSignguNm'],
+                    "full_name": f"{item['lDongRegnNm']} {item['lDongSignguNm']}",
+                }
+                for item in items
+            ]
+        else:
+            # 시/도 목록 변환
+            return [
+                {"cd": item["lDongRegnCd"], "name": item["lDongRegnNm"]}
+                for item in items
+            ]
 
-def get_sgis_sido():
-    """SGIS 시/도 목록 조회"""
-    token = _get_sgis_token()
-    params = {"accessToken": token}
-    resp = session.get(SGIS_API_HOST, params=params, timeout=5)
-    resp.raise_for_status()
-    return resp.json()
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=502, detail=f"공공데이터포털 API 요청 실패: {e}")
+    except (KeyError, TypeError) as e:
+        raise HTTPException(status_code=502, detail=f"공공데이터포털 API 응답 처리 실패: {e}")
 
-
-def get_sgis_sigungu(sido_code: str):
-    """SGIS 시/군/구 목록 조회"""
-    token = _get_sgis_token()
-    params = {"accessToken": token, "cd": sido_code}
-    resp = session.get(SGIS_API_HOST, params=params, timeout=5)
-    resp.raise_for_status()
-    return resp.json()
 
 def search_tourism_by_keyword(keyword: str):
     tour_key = getattr(settings, "TOUR_API_KEY", None)

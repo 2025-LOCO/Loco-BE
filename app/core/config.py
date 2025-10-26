@@ -17,10 +17,6 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
-    # SGIS API
-    SGIS_CONSUMER_KEY: str = ""
-    SGIS_CONSUMER_SECRET: str = ""
-
     # 외부 API 키
     TOUR_API_KEY: str = ""
     KAKAO_REST_API_KEY: str = ""
