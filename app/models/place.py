@@ -29,7 +29,7 @@ class Place(Base):
     count_normal: Mapped[int] = mapped_column(Integer, default=0)
     count_bad: Mapped[int] = mapped_column(Integer, default=0)
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.current_timestamp())
 
     # 위치 관련 추가 칼럼(필요 시 활성화)
     latitude: Mapped[float] = mapped_column(Float, nullable=False)

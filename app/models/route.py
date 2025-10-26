@@ -23,7 +23,7 @@ class Route(Base):
     count_soso: Mapped[int] = mapped_column(Integer, default=0)
     count_bad: Mapped[int] = mapped_column(Integer, default=0)
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.current_timestamp())
 
     # 태그들
     tag_period: Mapped[Optional[int]] = mapped_column(nullable=True)                # 1~33 (32 장기, 33 all)

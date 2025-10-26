@@ -48,3 +48,4 @@ alembic/versions/*.py
 scripts/seed.sql
 
 .cursor
+test.db.bak

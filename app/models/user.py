@@ -38,7 +38,7 @@ class User(Base):
     image_url: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     city_id: Mapped[Optional[str]] = mapped_column(ForeignKey("region_cities.region_id"), nullable=True)
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.current_timestamp())
     is_local: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     # 랭킹, 포인트, 등급 컬럼
