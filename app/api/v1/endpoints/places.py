@@ -79,3 +79,12 @@ def read_place_detail(place_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Place not found")
     else:
         return to_place_out(obj)
+
+@router.get("/by-user/{user_id}", response_model=List[PlaceOut], summary="특정 사용자가 생성한 장소 목록 조회")
+def list_places_by_user(user_id: int, db: Session = Depends(get_db)):
+    places_db = crud_place.get_by_user_id(db, user_id=user_id)
+    if not places_db:
+        # 사용자가 없거나 장소를 생성하지 않은 경우 빈 리스트를 반환하는 것이 일반적입니다.
+        # 만약 사용자가 없는 경우 404를 반환하고 싶다면 별도의 사용자 확인 로직이 필요합니다.
+        return []
+    return [to_place_out(p) for p in places_db]

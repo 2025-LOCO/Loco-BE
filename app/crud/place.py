@@ -79,3 +79,7 @@ def sum_loco_count_by_user(db: Session, user_id: int) -> List[int]:
         func.sum(Place.count_bad)
     ).filter(Place.created_by == user_id).first()
     return [result[0] or 0, result[1] or 0, result[2] or 0]
+
+def get_by_user_id(db: Session, user_id: int) -> List[Place]:
+    """특정 사용자가 생성한 모든 장소를 조회합니다."""
+    return db.query(Place).options(*eager_loading_options).filter(Place.created_by == user_id).order_by(Place.place_id.desc()).all()
