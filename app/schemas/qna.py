@@ -17,6 +17,8 @@ class QuestionOut(BaseModel):
     view_count: int
     answer_count: int
     answers: List["AnswerOut"] = []
+    user_nickname: str
+    author_image_url: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -34,6 +36,7 @@ class AnswerOut(BaseModel):
     created_at: datetime
     user_nickname: str
     vote_type: Optional[VoteType] = None
+    author_image_url: Optional[str] = None
 
     class Config:
         from_attributes = True
