@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     KAKAO_REST_API_KEY: str = ""
 
     # CORS
-    ALLOWED_ORIGINS: list[str] = Field(default_factory=lambda: ["http://localhost:5173", "http://localhost:3000"], env="ALLOWED_ORIGINS")
+    ALLOWED_ORIGINS: list[str] = Field(default_factory=lambda: ["http://localhost:5173", "http://localhost:3000", "https://loco-fe.vercel.app"], env="ALLOWED_ORIGINS")
 
     # Additional settings
     environment: str = Field("production", alias="ENVIRONMENT")
