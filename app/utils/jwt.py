@@ -2,7 +2,7 @@
 import os, time, jwt  # pyjwt
 SECRET_KEY = os.getenv("JWT_SECRET", "dev-secret")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_SECONDS = 60 * 60 * 24  # 24h
+ACCESS_TOKEN_EXPIRE_SECONDS = 60 * 30  # 30m
 
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
