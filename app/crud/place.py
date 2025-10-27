@@ -2,6 +2,7 @@
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import case, func, Float
 from typing import List, Optional
+from fastapi import HTTPException, status
 from app.models import Place, User # User 모델 추가
 from app.schemas.place import PlaceCreate
 
@@ -11,6 +12,14 @@ eager_loading_options = [
 ]
 
 def create(db: Session, user_id: int, obj_in: PlaceCreate) -> Place:
+    # kakao_place_id로 기존 장소 검색
+    existing_place = db.query(Place).filter(Place.kakao_place_id == obj_in.kakao_place_id).first()
+    if existing_place:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="이미 등록된 장소입니다."
+        )
+
     place = Place(
         name=obj_in.name,
         type=obj_in.type,
