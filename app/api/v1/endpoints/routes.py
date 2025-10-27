@@ -21,13 +21,14 @@ def to_loco_route(route: "Route") -> LocoRoute:
     
     for p_map in sorted_places:
         # RoutePlace 스키마 생성
-        places_schema.append(RoutePlace(
-            id=p_map.place.place_id,
-            name=p_map.place.name,
-            category=p_map.place.type,
-            day=p_map.day,
-            order=p_map.order
-        ))
+        if p_map.place: # 장소 정보가 있는 경우에만 처리
+            places_schema.append(RoutePlace(
+                id=p_map.place.place_id,
+                name=p_map.place.name,
+                category=p_map.place.type,
+                day=p_map.day,
+                order=p_map.order
+            ))
         
         # Transportation 스키마 생성 (중복 제거 로직 포함)
         if p_map.transportation:

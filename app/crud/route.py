@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import case, func, Float
 from app.models import Route, User, RoutePlaceMap, Place, RegionCity
 from app.schemas.route import RouteCreate
-from app.services.vector_service import text_to_vector
+# from app.services.vector_service import text_to_vector # 삭제
 
 # 공통적으로 사용할 Eager Loading 옵션
 eager_loading_options = [
@@ -13,12 +13,12 @@ eager_loading_options = [
 ]
 
 def create(db: Session, user_id: int, obj_in: RouteCreate) -> Route:
-    tags_text = (
-        f"{obj_in.tag_env or ''} "
-        f"{obj_in.tag_with or ''} "
-        f"{obj_in.tag_atmosphere or ''}"
-    )
-    embedding_vector = text_to_vector(tags_text) if tags_text.strip() else None
+    # tags_text = (
+    #     f"{obj_in.tag_env or ''} "
+    #     f"{obj_in.tag_with or ''} "
+    #     f"{obj_in.tag_atmosphere or ''}"
+    # )
+    # embedding_vector = text_to_vector(tags_text) if tags_text.strip() else None
     
     route = Route(
         name=obj_in.name,
@@ -31,7 +31,7 @@ def create(db: Session, user_id: int, obj_in: RouteCreate) -> Route:
         tag_atmosphere=obj_in.tag_atmosphere,
         tag_place_count=obj_in.tag_place_count,
         created_by=user_id,
-        embedding=embedding_vector
+        # embedding=embedding_vector # 삭제
     )
     db.add(route)
     db.flush()  # flush to get the route_id for the new route
