@@ -149,7 +149,12 @@ def get_regions_from_public_api(sido_code: str | None = None):
                 detail=f"공공데이터포털 API 오류: {header.get('resultMsg', 'Unknown error')}",
             )
 
-        items = data.get("response", {}).get("body", {}).get("items", {}).get("item", [])
+        items_container = data.get("response", {}).get("body", {}).get("items", {})
+        if isinstance(items_container, dict):
+            items = items_container.get("item", [])
+        else:
+            # items가 dict가 아닌 경우(문자열 등) 빈 리스트로 처리
+            items = []
 
         # 데이터 형식 변환
         if not items:
