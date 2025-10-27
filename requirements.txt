@@ -13,7 +13,6 @@ pgvector>=0.2.0
 
 # Auth & Security
 passlib[bcrypt]>=1.7.4
-bcrypt>=4.0.1
 PyJWT>=2.9.0
 
 # AI & Vector Embedding
