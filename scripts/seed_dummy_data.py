@@ -172,6 +172,18 @@ def create_users(db: Session):
             grade=UserGrade.C,
             ranking=None
         ),
+        User(
+            id=7,
+            email="jecy123@naver.com",
+            hashed_password=get_password_hash("locoloco"),
+            nickname="수원지키미",
+            intro="수원토박이가 소개합니다!",
+            city_id="411100", # 수원시
+            is_local=True,
+            points=0,
+            grade=UserGrade.C,
+            ranking=None
+        ),
     ]
     
     db.add_all(users)
@@ -487,7 +499,7 @@ def create_routes(db: Session, users):
             tag_env="city",
             tag_with="friend",
             tag_move="walk",
-            tag_atmosphere="자유롭고 감성적인",
+            tag_atmosphere="다채로운 경험",
             tag_place_count=3
         ),
         Route(
@@ -506,7 +518,7 @@ def create_routes(db: Session, users):
             tag_env="sea",
             tag_with="love",
             tag_move="public",
-            tag_atmosphere="로맨틱하고 감성적인",
+            tag_atmosphere="맛있는 여행",
             tag_place_count=4
         ),
         Route(
@@ -525,7 +537,7 @@ def create_routes(db: Session, users):
             tag_env="city",
             tag_with="family",
             tag_move="public",
-            tag_atmosphere="전통적이고 교육적인",
+            tag_atmosphere="다채로운 경험",
             tag_place_count=3
         ),
         Route(
@@ -544,7 +556,7 @@ def create_routes(db: Session, users):
             tag_env="sea",
             tag_with="friend",
             tag_move="car",
-            tag_atmosphere="자연과 함께하는",
+            tag_atmosphere="잔잔하고 조용한",
             tag_place_count=5
         ),
         Route(
@@ -563,7 +575,7 @@ def create_routes(db: Session, users):
             tag_env="city",
             tag_with="friend",
             tag_move="walk",
-            tag_atmosphere="자유롭고 활기찬",
+            tag_atmosphere="신나는 액티비티",
             tag_place_count=2
         ),
         Route(
@@ -582,7 +594,7 @@ def create_routes(db: Session, users):
             tag_env="sea",
             tag_with="love",
             tag_move="car",
-            tag_atmosphere="감성적이고 여유로운",
+            tag_atmosphere="아늑하고 로맨틱한",
             tag_place_count=3
         ),
     ]
