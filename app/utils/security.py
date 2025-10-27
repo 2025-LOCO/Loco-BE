@@ -28,3 +28,15 @@ def get_current_user(cred: HTTPAuthorizationCredentials = Depends(bearer),
         raise HTTPException(status_code=401, detail="Token has been revoked")
 
     return user
+
+
+def get_optional_current_user(
+    cred: HTTPAuthorizationCredentials = Depends(bearer), db: Session = Depends(get_db)
+) -> User | None:
+    if not cred:
+        return None
+    try:
+        user = get_current_user(cred, db)
+        return user
+    except HTTPException:
+        return None

@@ -9,8 +9,11 @@ from app.schemas.favorite import (
 )
 from app.crud import favorite as crud_fav
 from app.models import User
-from app.utils.security import get_current_user
+from app.utils.security import get_current_user, get_optional_current_user
 from app.api.v1.endpoints.routes import to_loco_route
+from app.crud import place as crud_place
+from app.schemas.place import PlaceOut
+from app.schemas.route import RouteOut
 
 
 router = APIRouter(prefix="/favorites", tags=["favorites"])
@@ -59,3 +62,27 @@ def remove_fav_route(route_id: int, db: Session = Depends(get_db), current: User
     if not ok:
         raise HTTPException(status_code=404, detail="Favorite route not found")
     return None
+
+
+@router.get("/places/ids", summary="찜한 장소 ID 목록 조회")
+def get_my_favorite_place_ids(
+    current_user: User = Depends(get_optional_current_user),
+    db: Session = Depends(get_db),
+):
+    if not current_user:
+        return []
+    favorites = crud_fav.list_my_favorite_places(db, current_user.id)
+    return [fav.place_id for fav in favorites]
+
+
+@router.get(
+    "/places",
+    response_model=List[PlaceOut],
+    summary="현재 유저가 찜한 장소 목록",
+)
+def get_my_favorite_places(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    favorites = crud_fav.list_my_favorite_places(db, current_user.id)
+    return [fav.place for fav in favorites]
