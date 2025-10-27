@@ -134,3 +134,8 @@ def read_route_detail(route_id: int, db: Session = Depends(get_db)):
     if not obj:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Route not found")
     return to_loco_route(obj)
+
+@router.get("/by-user/{user_id}", response_model=List[LocoRoute], summary="특정 사용자가 만든 경로 목록 조회")
+def list_routes_by_user(user_id: int, db: Session = Depends(get_db)):
+    routes_db = crud_route.get_routes_by_user(db, user_id=user_id)
+    return [to_loco_route(r) for r in routes_db]

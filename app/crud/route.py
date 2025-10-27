@@ -129,6 +129,17 @@ def get_ranked_routes(db: Session, limit: int = 25) -> List[Route]:
 def get_new_routes(db: Session, limit: int = 25) -> List[Route]:
     return db.query(Route).options(*eager_loading_options).order_by(Route.created_at.desc()).limit(limit).all()
 
+def get_routes_by_user(db: Session, user_id: int, limit: int = 50, offset: int = 0) -> List[Route]:
+    return (
+        db.query(Route)
+        .options(*eager_loading_options)
+        .filter(Route.created_by == user_id)
+        .order_by(Route.route_id.desc())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+
 def count_by_user(db: Session, user_id: int) -> int:
     return db.query(Route).filter(Route.created_by == user_id).count()
 
