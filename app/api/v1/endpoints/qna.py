@@ -60,3 +60,25 @@ def create_answer(body: AnswerCreate, db: Session = Depends(get_db), current: Us
     answer.user_nickname = current.nickname
     answer.author_image_url = current.image_url
     return answer
+
+@router.delete("/questions/{question_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_question(question_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    question_to_delete = db.query(Question).filter(Question.question_id == question_id).first()
+    if not question_to_delete:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Question not found")
+    if question_to_delete.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete this question")
+    
+    crud_qna.delete_question(db, question_id=question_id, user_id=current_user.id)
+    return
+
+@router.delete("/answers/{answer_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_answer(answer_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    answer_to_delete = db.query(Answer).filter(Answer.answer_id == answer_id).first()
+    if not answer_to_delete:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Answer not found")
+    if answer_to_delete.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete this answer")
+
+    crud_qna.delete_answer(db, answer_id=answer_id, user_id=current_user.id)
+    return

@@ -32,3 +32,30 @@ def create_answer(db: Session, user_id: int, obj_in: AnswerCreate) -> Answer:
 
 def count_answers_by_user(db: Session, user_id: int) -> int:
     return db.query(Answer).filter(Answer.user_id == user_id).count()
+
+def delete_question(db: Session, question_id: int, user_id: int) -> Question | None:
+    question = db.query(Question).filter(Question.question_id == question_id).first()
+    if not question:
+        return None  # 존재하지 않음
+    if question.user_id != user_id:
+        return None  # 권한 없음
+    
+    db.delete(question)
+    db.commit()
+    return question
+
+def delete_answer(db: Session, answer_id: int, user_id: int) -> Answer | None:
+    answer = db.query(Answer).filter(Answer.answer_id == answer_id).first()
+    if not answer:
+        return None # 존재하지 않음
+    if answer.user_id != user_id:
+        return None # 권한 없음
+
+    # 답변 수 카운트 감소
+    question = db.query(Question).filter(Question.question_id == answer.question_id).first()
+    if question:
+        question.answer_count = max(0, question.answer_count - 1)
+
+    db.delete(answer)
+    db.commit()
+    return answer
